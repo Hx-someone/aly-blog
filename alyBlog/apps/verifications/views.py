@@ -10,9 +10,9 @@ from users import models
 from verifications import contains
 from utils.captcha.captcha import captcha
 from verifications.forms import SmsCodeForm
-from utils.yuntongxun.sms import CCP
+from celery_tasks.sms.tasks import send_sms_code
 from utils.res_code.json_function import to_json_data
-from utils.res_code.res_code import Code, error_map
+from utils.res_code.res_code import Code
 
 logger = logging.getLogger("django")
 
@@ -113,9 +113,9 @@ class SmsCodeView(View):
             redis_obj.setex(sms_text_key, contains.SMS_CODE_EXPIRE_TIME, sms_text)  # key, expire_time, value
             redis_obj.setex(sms_repeat_key, contains.SMS_CODE_EXPIRE_TIME, contains.SMS_REPEAT_EXPIRE_TIME)
 
-            logger.info("发送短信正常[mobile:%s sms_num:%s]" % (mobile, sms_text))  # 调试代码时候用，在控制台显示
-            print(sms_text)
-            return to_json_data(errmsg="短信发送成功")  # 短信调试
+            # logger.info("发送短信正常[mobile:%s sms_num:%s]" % (mobile, sms_text))  # 调试代码时候用，在控制台显示
+            # print(sms_text)
+            # return to_json_data(errmsg="短信发送成功")  # 短信调试
 
             # # 9. 使用用通讯插件发送短信
             # try:
@@ -130,6 +130,11 @@ class SmsCodeView(View):
             #     else:  # 发送失败
             #         logger.warning("短信发送失败[mobile:{}]".format(mobile))
             #         return to_json_data(errno=Code.SMSFAIL, errmsg=error_map[Code.SMSFAIL])
+
+            # 使用celery异步处理短信发动任务
+            expires = 300
+            send_sms_code.delay(mobile,sms_text,expires,contains.SMS_TEMPLATE)
+            return to_json_data(errno=Code.OK,errmsg="短信验证码发送成功")
 
         # 校验未通过
         else:

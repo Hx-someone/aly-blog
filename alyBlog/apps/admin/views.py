@@ -18,7 +18,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMix
 from news import models
 from admin import contains
 from docs.models import Docs
-from settings import FDFS_URL
+from alyBlog.settings import FDFS_URL
 from course.models import Course, CourseCategory, Teacher
 from users.models import Users
 from utils.fast.fdfs import client

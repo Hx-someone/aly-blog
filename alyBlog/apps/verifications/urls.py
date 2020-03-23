@@ -13,7 +13,7 @@ app_name = "verifications"
 
 urlpatterns = [
     path("image_code/<uuid:image_code_id>/", views.ImageCodesView.as_view(), name="image_code"),
-    re_path("username/(?P<username>\w{6,18})/", views.CheckUsernameView.as_view(), name="username"),
+    re_path("username/(?P<username>\w{5,18})/", views.CheckUsernameView.as_view(), name="username"),
     re_path("mobile/(?P<mobile>1[3-9]\d{9})/", views.CheckMobileView.as_view(), name="mobile"),
     path("sms_code/", views.SmsCodeView.as_view(), name="sms_code"),
 ]

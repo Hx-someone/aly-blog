@@ -50,7 +50,7 @@ INSTALLED_APPS = [
     "admin",
     "BDUser",
     "news.templatetags",
-    # "mdeditors",
+
 
 
 ]
