@@ -1,0 +1,36 @@
+{% extends 'base/base.html' %}
+{% load staticfiles %}
+{% block title %}
+    课程主页
+{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/course/course.css' %}">
+{% endblock %}
+
+{% block main_contain %}
+    <main id="course-container">
+        <div class="w1200">
+            <ul class="course-list">
+                {% for course in course_list %}
+                    <li class="course-item">
+                        <a href="{% url 'course:course_detail' course.id %}">
+                            <img class="course-img" src="{{ course.cover_url }}"
+                                 alt="{{ course.category.name }}">
+                            <div class="course-content">
+                                <p class="course-info">{{ course.name }}</p>
+                                <p class="course-author">{{ course.teacher.name }}({{ course.teacher.position }})</p>
+                                <p class="course-price free">免费</p> {# 后面写成动态的 #}
+                            </div>
+                        </a>
+                    </li>
+                {% endfor %}
+
+
+            </ul>
+        </div>
+    </main>
+{% endblock %}
+
+
+

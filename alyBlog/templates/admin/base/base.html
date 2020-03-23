@@ -1,0 +1,246 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <title>{% block title %}基类模板{% endblock %}</title>
+
+    <link rel="stylesheet" href="{% static 'css/admin/base/all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/admin/base/adminlte.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/admin/base/sweetalert.css' %}">
+    <link rel="stylesheet" href="{% static 'css/admin/base/self.css' %}">
+
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1491329_kva4j3zc4ug.css"> {# 阿里云矢量图标 #}
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+    {% block css %}
+    {% endblock %}
+</head>
+<body class="hold-transition sidebar-mini">
+<div class="wrapper">
+    <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+        <ul class="navbar-nav ml-auto">
+
+            {% block user_info %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link" data-toggle="dropdown" href="#">
+                        <span>{{ user.username }}</span>
+                        <i class="far fa-user"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+
+                        <a href="{% url 'admin:index' %}" class="fa-pull-left text-muted ">后台管理</a>
+                        <a href="{% url 'users:logout' %}" class="fa-pull-right text-muted text-sm">退出登录</a>
+
+                    </div>
+                </li>
+            {% endblock %}
+
+        </ul>
+    </nav>
+    <aside class="main-sidebar sidebar-dark-primary elevation-4">
+        <a href="{% url 'news:index' %}" class="brand-link">
+            <img src="{% static 'images/avatar.jpeg' %}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+                 style="opacity: .8">
+            <span class="brand-text font-weight-light">主页</span>
+        </a>
+
+        <!-- 左边菜单 -->
+        <div class="sidebar">
+
+            <!-- 左边用户信息 -->
+            {% block left_userInfo %}
+                <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                    <div class="image">
+                        <img src="{% static 'images/avatar.jpeg' %}" class="img-circle elevation-2" alt="User Image">
+                    </div>
+                    <div class="info">
+                        <a href="{% url 'admin:index' %}" class="d-block">{{ user.username }}</a>
+                    </div>
+                </div>
+            {% endblock %}
+
+            <!-- 菜单栏 -->
+            {% block menu %}
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
+                        data-accordion="false">
+                        <li class="nav-item has-treeview">
+                            <a href="{% url 'admin:article' %}" class="nav-link">  {# 后面主页写成分析页 #}
+                                <i class="iconfont icon-zuolantubiao_wenzhangguanli"></i>
+                                <p>
+                                    文章管理
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview" style="display: none;">
+                                <li class="nav-item">
+                                    <a href="{% url 'admin:article_banner' %}" class="nav-link">
+                                        <i class="iconfont icon-tubiaozhizuomoban"></i>
+                                        <p>文章轮播图</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{% url 'admin:hot_article' %}" class="nav-link">
+                                        <i class="iconfont icon-remenwenzhang"></i>
+                                        <p>热门文章</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{% url 'admin:article' %}" class="nav-link">
+                                        <i class="iconfont icon-zuolantubiao_wenzhangguanli"></i>
+                                        <p>文章管理</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{% url 'admin:article_pub' %}" class="nav-link">
+                                        <i class="iconfont icon-xxfb"></i>
+                                        <p>文章发布</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{% url 'admin:tags' %}" class="nav-link">
+                                        <i class="iconfont icon-wenzhang-biaoqian"></i>
+                                        <p>文章标签管理</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item has-treeview">
+                            <a href="#" class="nav-link">
+                                <i class="iconfont icon-zaixianshipin"></i>
+                                <p>
+                                    在线视频
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview" style="display: none;">
+                                <li class="nav-item">
+                                    <a href="{% url 'admin:course' %}" class="nav-link">
+                                        <i class="iconfont icon-shipinguanli"></i>
+                                        <p>视频管理</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{% url 'admin:course_pub' %}" class="nav-link">
+                                        <i class="iconfont icon-shipinfabu"></i>
+                                        <p>视频发布</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item has-treeview">
+                            <a href="" class="nav-link">
+                                <i class="iconfont icon-wendangguanli2"></i>
+                                <p>
+                                    文档管理
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview" style="display: none;">
+                                <li class="nav-item">
+                                    <a href="{% url 'admin:doc' %}" class="nav-link">
+                                        <i class="iconfont icon-wendangguanli1"></i>
+                                        <p>文档管理</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{% url 'admin:doc_pub' %}" class="nav-link">
+                                        <i class="iconfont icon-wendangfabu"></i>
+                                        <p>文档发布</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item has-treeview">
+                            <a href="#" class="nav-link">
+                                <i class="iconfont icon-quanxian"></i>
+                                <p>
+                                    权限管理
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview" style="display: none;">
+                                <li class="nav-item">
+                                    <a href="{% url 'admin:group' %}" class="nav-link">
+                                        <i class="iconfont icon-quanxian1"></i>
+                                        <p>用户权限管理</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{% url 'admin:group_add' %}" class="nav-link">
+                                        <i class="iconfont icon-quanxianchuangjian"></i>
+                                        <p>用户权限创建</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{% url 'admin:user' %}" class="nav-link">
+                                        <i class="iconfont icon-yonghuguanli"></i>
+                                        <p>用户管理</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+            {% endblock %}
+
+        </div>
+    </aside>
+
+    <!-- 主要内容 -->
+    {% block main_content %}
+        <div class="content-wrapper">
+            <!-- 内容头部 -->
+            <div class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <h1 class="m-0 text-dark">
+                                {% block content_header %}实例样本{% endblock %}
+                                <small>
+                                    {% block content_header_brief %}样本简介{% endblock %}
+                                </small>
+                            </h1>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            {% block content %}
+                <div class="content">
+                    <div class="container-fluid">
+                        <div class="row">
+                        </div>
+                    </div>
+                </div>
+            {% endblock %}
+        </div>
+    {% endblock %}
+
+    <!-- 底部 -->
+    {% block footer %}
+        <footer class="main-footer">
+            <div class="float-right d-none d-sm-inline">
+                未来的大牛
+            </div>
+            <strong>Copyright &copy; 2020-2099 <a href="https://adminlte.io">xxx</a>.</strong> 努力方能成就梦想
+        </footer>
+    {% endblock %}
+</div>
+
+<script src="{% static 'js/admin/base/jquery.min.js' %}"></script>
+<script src="{% static 'js/admin/base/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'js/admin/base/adminlte.min.js' %}"></script>
+<script src="{% static 'js/admin/base/fsweetalert.js' %}"></script>
+<script src="{% static 'js/admin/base/message.js' %}"></script>
+<script src="{% static 'js/admin/base/sweetalert.min.js' %}"></script>
+<script src="{% static 'js/admin/base/bootstrap.min.js' %}"></script>
+{% block script %}
+{% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,37 @@
+.banner-img {
+    width: 400px;
+    height: 100px;
+}
+
+.banner-img img {
+    width: 100%;
+    max-height: 100%;
+}
+
+.banner-info {
+    margin-left: 20px;
+}
+
+.form-group {
+    width: 600px;
+}
+
+ul.banner-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+ul.banner-list li.banner-item {
+    margin-top: 20px;
+}
+
+@media screen and (max-width: 1100px) {
+    .form-group {
+        margin-top: 15px;
+    }
+
+    .banner-info {
+        margin: 0;
+    }
+}

@@ -1,0 +1,219 @@
+{% extends 'admin/base/base.html' %}
+{% load staticfiles %}
+
+{% block title %}
+    {% if article %}
+        文章更新页
+    {% else %}
+        文章发布页
+    {% endif %}
+{% endblock %}
+
+{% block content_header %}
+    {% if article %}
+        文章更新
+    {% else %}
+        文章发布
+    {% endif %}
+{% endblock %}
+
+{% block content_header_brief %}
+    文章更新功能实现
+{% endblock %}
+
+{% block css %}
+{#    <link rel="stylesheet" href="{% static 'plugins/markdown_editor/css/editormd.css' %}">#}
+{#    <link rel="stylesheet" href="{% static 'mdeditor/css/editormd.css' %}">#}
+{#    <link rel="stylesheet" href="{% static 'mdeditor/css/editormd.preview.css' %}">#}
+
+    <link rel="stylesheet" href="{% static 'mdeditor/css/editormd.css' %}">
+    <link rel="stylesheet" href="{% static 'mdeditor/css/style2.css' %}">
+
+{% endblock %}
+
+
+{% block content %}
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12 col-xs-12 col-sm-12">
+                    <div class="box box-primary">
+                        <div class="box-body">
+
+                            <div class="form-group">
+                                <label for="article-title">文章标题</label>
+                                {% if article %}
+                                    <input type="text" class="form-control" id="article-title" name="article-title"
+                                           placeholder="请输入文章标题"
+                                           value="{{ article.title }}">
+                                {% else %}
+                                    <input type="text" class="form-control" id="article-title" name="article-title"
+                                           placeholder="请输入文章标题" autofocus>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-group">
+                                <label for="article-digest">文章摘要</label>
+                                {% if article %}
+                                    <textarea name="article-digest" id="article-digest" placeholder="请输入文章摘要"
+                                              class="form-control"
+                                              style="height: 8rem; resize: none;">{{ article.digest }}</textarea>
+                                {% else %}
+                                    <textarea name="article-digest" id="article-digest" placeholder="请输入文章摘要"
+                                              class="form-control"
+                                              style="height: 8rem; resize: none;"></textarea>
+                                {% endif %}
+
+                            </div>
+
+                            <div class="form-group">
+                                <label for="article-category">文章分类</label>
+                                <select name="article-category" id="article-category" class="form-control">
+                                    <option value="0">-- 请选择文章分类 --</option>
+                                    {% for tag in tags %}
+                                        <!-- 传tag_id到后台 -->
+                                        {% if article and tag == article.tag %}
+                                            <option value="{{ tag.id }}" selected>{{ tag.name }}</option>
+                                        {% else %}
+                                            <option value="{{ tag.id }}">{{ tag.name }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="form-group" id="container">
+                                <label for="image-url">文章缩略图</label>
+                                <div class="input-group">
+                                    {% if article %}
+                                        <input type="text" class="form-control" id="image-url"
+                                               name="image-url"
+                                               placeholder="请上传图片或输入文章缩略图地址" value="{{ article.image_url }}">
+                                    {% else %}
+                                        <input type="text" class="form-control" id="image-url"
+                                               name="image-url"
+                                               placeholder="请上传图片或输入文章缩略图地址">
+                                    {% endif %}
+
+                                    <div class="input-group-btn">
+                                        <label class="btn btn-default btn-file">
+                                            上传至服务器 <input type="file" id="upload-image">
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group">
+                                <div class="progress" style="display: none">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                         style="width: 0;">0%
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="article-content">文章内容</label>
+                                {% if article %}
+                                    <div id="article-content">
+                                        <textarea name="content" id="content">{{ article.content|safe }}</textarea>
+                                    </div>
+                                {% else %}
+                                    <div id="article-content">
+                                        <textarea name="content" style="display:none;" id="content"></textarea>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                        </div>
+                        <div class="box-footer">
+                            {% if article %}
+                                <a href="javascript:void (0);" class="btn btn-primary pull-right" id="btn-pub-article"
+                                   data-article-id="{{ article.id }}">更新文章 </a>
+                            {% else %}
+                                <a href="javascript:void (0);" class="btn btn-primary pull-right"
+                                   id="btn-pub-article">发布文章 </a>
+                            {% endif %}
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+{#<script src="{% static 'mdeditor/js/jquery.min.js' %}"></script>#}
+<script src="{% static 'mdeditor/js/editormd.min.js' %}"></script>
+
+    <script src="{% static 'js/admin/news/article_pub.js' %}"></script>
+    <script src="{% static 'js/admin/plugins/image_upload.js' %}"></script>
+    <script type="text/javascript">
+
+    $(function () {
+        editormd("article-content", {
+            watch: true , // 关闭实时预览
+            lineNumbers: true,
+            lineWrapping:true,
+            width: "100%",  // 编辑宽度
+            height: "730",// 编辑高度
+            placeholder: 'Enjoy!',  // 打开框的提示语
+            // 当有多个mdeditor时，全屏后，其他mdeditor仍然显示，解决此问题。
+            onfullscreen : function() {
+                this.editor.css("border-radius", 0).css("z-index", 9999);
+            },
+            onfullscreenExit : function() {
+                this.editor.css({
+                    zIndex : 10,
+                    border : "1px solid rgb(221,221,221)"
+                })
+            },
+            syncScrolling: "single",
+            path: "{% static  'mdeditor/js/lib/' %}",  // js路径
+            // theme
+            theme : "default",  // 默认主题  分dark和default
+            previewTheme : "default",  // 预览主题 分dark和default
+            editorTheme : "default",  // 编辑主题 分dark和default
+
+            saveHTMLToTextarea: true, // editor.md 有问题没有测试成功
+            toolbarAutoFixed: true,
+            searchReplace: true,
+            emoji: true,
+            tex: true,
+            taskList: false,
+            flowChart: true,
+            sequenceDiagram: true,
+
+            // image upload
+            imageUpload: true,  //图片是否允许上传
+            imageFormats: ["jpg", "JPG", "jpeg", "JPEG", "gif", "GIF", "png",
+                             "PNG", "bmp", "BMP", "webp", "WEBP"],  // 图片上传的格式
+            imageUploadURL: "{% url 'admin:upload_markdown_image' %}",  // 图片上传请求的url
+            toolbarIcons: function () {   //
+                return ["undo", "redo", "|",
+                "bold", "del", "italic", "quote", "ucwords", "uppercase", "lowercase", "|",
+                "h1", "h2", "h3", "h5", "h6", "|",
+                "list-ul", "list-ol", "hr", "|",
+                "link", "reference-link", "image", "code", "preformatted-text", "code-block", "table", "datetime",
+                "emoji", "html-entities", "pagebreak", "goto-line", "|",
+                "help", "info",
+                "||", "preview", "watch", "fullscreen"]
+            },
+            onload: function () {
+                console.log('onload', this);
+                //this.fullscreen();
+                //this.unwatch();
+                //this.watch().fullscreen();
+
+                //this.setMarkdown("#PHP");
+                //this.width("100%");
+                //this.height(480);
+                //this.resize("100%", 640);
+            }
+        });
+
+    });
+</script>
+
+
+{% endblock %}

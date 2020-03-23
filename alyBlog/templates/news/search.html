@@ -1,0 +1,156 @@
+{% extends 'base/base.html' %}
+{% load staticfiles %}
+{% load page %}
+
+{% block title %}
+    文章搜索
+{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/news/search.css' %}">
+{% endblock %}
+
+{% block main_contain %}
+    <div class="main-contain ">
+        <div class="search-box">
+            <form action="" style="display: inline-flex;">
+
+                <input type="search" placeholder="请输入要搜索的内容" name="q" class="search-control">
+
+
+                <input type="submit" value="搜索" class="search-btn">
+            </form>
+        </div>
+
+        <div class="content">
+
+            {#     搜索内容和显示#}
+            {% if not show %}
+                <div class="search-result-list">
+                    <h2 class="search-result-title">
+                        搜索结果共 <span style="font-weight: 700;color:#ff6620;">{{ paginator.num_pages }}</span> 页
+                    </h2>
+                    <ul class="news-list">
+
+                        {% load highlight %}
+
+                        {% for one_article in page.object_list %}
+                            <li class="news-item clearfix">
+                                <a href="{% url 'news:article_detail' one_article.id %}" class="news-thumbnail"
+                                   target="_blank">
+                                    <img src="{{ one_article.object.image_url }}" alt="">
+                                </a>
+                                <div class="news-content">
+                                    <h4 class="news-title">
+                                        <a href="{% url 'news:article_detail' one_article.id %}">
+                                            {% highlight one_article.title with query %}
+                                        </a>
+                                    </h4>
+                                    <p class="news-details">{% highlight one_article.digest with query %}</p>
+                                    <div class="news-other">
+                                        <a href=""><span class="news-type">{{ one_article.object.tag.name }}</span></a>
+                                        <span class="news-clicks">点击量({{ one_article.object.clicks }})</span>
+                                        <span class="news-time">{{ one_article.object.update_time }}</span>
+                                        <span class="news-author">
+                                                {% highlight one_article.object.author.username with query %}</span>
+                                    </div>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% else %}
+
+                <div class="news-contain">
+                    <div class="hot-recommend-list">
+                        <h2 class="hot-recommend-title">热门推荐</h2>
+                        <ul class="news-list">
+                            {% for one_hotarticle in page.object_list %}
+
+                                <li class="news-item clearfix">
+                                    <a href="#" class="news-thumbnail">
+                                        <img src="{{ one_hotarticle.article.image_url }}">
+                                    </a>
+                                    <div class="news-content">
+                                        <h4 class="news-title">
+                                            <a href="{% url 'news:article_detail' one_hotarticle.article.id %}"
+                                            >{{ one_hotarticle.article.title }}</a>
+                                        </h4>
+                                        <p class="news-details">{{ one_hotarticle.article.digest }}</p>
+                                        <div class="news-other">
+                                            <span class="news-type">{{ one_hotarticle.article.tag.name }}</span>
+                                            <span class="news-clicks">点击量({{ one_hotarticle.article.clicks }})</span>
+                                            <span class="news-time">{{ one_hotarticle.article.update_time }}</span>
+                                            <span class="news-author">{{ one_hotarticle.article.author.username }}</span>
+                                        </div>
+                                    </div>
+                                </li>
+                            {% endfor %}
+
+                        </ul>
+                    </div>
+                </div>
+            {% endif %}
+
+
+            {# 分页导航 #}
+            <div class="page-box" id="pages">
+                <div class="pagebar" id="pageBar">
+                    <a class="a1">共 {{ page.paginator.count | default:0 }} 条</a>
+
+                    {# 上一页的URL地址#}
+                    {% if page.has_previous %}
+                        {% if query %}
+                            <a href="{% url 'news:search' %}?q={{ query }}&amp;page={{ page.previous_page_number }}&q={{ query }}"
+                               class="prev">上一页</a>
+                        {% else %}
+                            <a href="{% url 'news:search' %}?page={{ page.previous_page_number }}" class="prev">上一页</a>
+                        {% endif %}
+                    {% endif %}
+
+
+                    {#列出所有的URL地址 页码#}
+                    {% if page.has_previous or page.has_next %}
+
+                        {% for num in page|page_bar %}
+                            {% if query %}
+                                {% if num == '...' %}
+                                    <span class="point">{{ num }}</span>
+                                {% else %}
+                                    {% if num == page.number %}
+                                        <span class="sel">{{ num }}</span>
+                                    {% else %}
+                                        <a href="{% url 'news:search' %}?page={{ num }}&q={{ query }}">{{ num }}</a>
+                                    {% endif %}
+                                {% endif %}
+                            {% else %}
+                                {% if num == '...' %}
+                                    <span class="point">{{ num }}</span>
+                                {% else %}
+                                    {% if num == page.number %}
+                                        <span class="sel">{{ num }}</span>
+                                    {% else %}
+                                        <a href="{% url 'news:search' %}?page={{ num }}">{{ num }}</a>
+                                    {% endif %}
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+
+                    {# next_page 下一页的URL地址#}
+                    {% if page.has_next %}
+                        {% if query %}
+                            <a href="{% url 'news:search' %}?q={{ query }}&amp;page={{ page.next_page_number }}&q={{ query }}"
+                               class="next">下一页</a>
+                        {% else %}
+                            <a href="{% url 'news:search' %}?page={{ page.next_page_number }}" class="next">下一页</a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
+
+

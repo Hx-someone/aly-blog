@@ -1,0 +1,154 @@
+{% extends 'admin/base/base.html' %}
+{% load staticfiles %}
+
+{% block title %}
+    权限管理页
+{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/admin/news/bootstrap-datepicker.min.css' %}">
+{% endblock %}
+
+{% block content_header %}
+    权限管理
+{% endblock %}
+
+{% block content_header_brief %}
+    权限的增删改查
+{% endblock %}
+
+
+{% block content %}
+    <style>
+        .ml20 {
+            margin-left: 20px;
+        }
+
+        .mt20 {
+            margin-top: 20px;
+        }
+    </style>
+    <div class="content">
+        <div class="container-fluid">
+            <div class="box">
+                <div class="box-header " style="margin: 0;">
+                    <form action="" class="form-inline">
+                        <div class="form-group mt20">
+                            <label for="name">用户组名：</label>
+
+                            <input type="text" class="form-control"
+                                   placeholder="请输入组名" id="name"
+                                   name="name">
+                        </div>
+                        <div class="form-group mt20">
+                            <button class="btn btn-primary ml20">查询</button>
+                            <a href="{% url 'admin:group' %}" class="btn btn-info ml20">清除查询</a>
+
+                        </div>
+
+                    </form>
+                </div>
+                <br>
+                <br>
+                <div class="box-body">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                        <tr>
+                            <th>用户组名</th>
+                            <th>人数</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for group in groups %}
+                            <tr>
+                                <td><a href=""
+                                       target="_blank">{{ group.name }}</a>
+                                </td>
+                                <td>{{ group.user_num }}</td>
+                                <td>
+                                    <a href="{% url 'admin:group_edit' group.id %}" class="btn btn-xs
+                                    btn-warning">编辑</a>
+                                    <a href="javascript:void (0);" class="btn btn-xs btn-danger btn-del"
+                                       data-group-name="{{ group.name }}" data-group-id="{{ group.id }}" >删除</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="box-footer">
+                    <span class="fa-pull-left">第{{ current_page_num }}页/总共{{ total_page_num }}页</span>
+                    <nav class="fa-pull-right" aria-label="Page navigation">
+                        <!-- 分页 -->
+                        <ul class="pagination">
+
+                            <!-- 上一页 -->
+                            {% if article_info.has_previous %}
+                                <li><a class="page-link" href="?page={{ article_info.previous_page_number }}
+                                &{{ other_param }}">上一页</a>
+                                </li>
+                            {% else %}
+                                {#                                <li class="disabled"><a href="javascript:void(0);">上一页</a></li>#}
+                                <li><a class="page-link" href="#">上一页</a></li>
+                            {% endif %}
+
+                            <!-- 左标记 -->
+                            {% if left_has_more_page %}
+                                <li><a class="page-link" href="?page=1&{{ other_param }}">1</a></li>
+                                <li><a class="page-link" href="javascript:void(0);">...</a></li>
+                            {% endif %}
+
+
+                            <!-- 左边的页码 -->
+                            {% for left_page in left_page_range %}
+                                <li><a class="page-link" href="?page={{ left_page }}&{{ other_param }}"
+                                >{{ left_page }}</a></li>
+                            {% endfor %}
+
+                            <!-- 当前页面 -->
+                            {% if current_page_num %}
+                                <li class="page-item active"><a class="page-link"
+                                                                href="?page={{ current_page_num }}&{{ other_param }}">{{ current_page_num }}</a>
+                                </li>
+                            {% endif %}
+
+
+                            <!-- 右边的页面 -->
+                            {% for right_page in right_page_range %}
+                                <li><a class="page-link" href="?page={{ right_page }}&{{ other_param }}"
+                                >{{ right_page }}</a></li>
+                            {% endfor %}
+
+                            <!-- 右标记 -->
+                            {% if right_has_more_page %}
+                                <li><a class="page-link" href="javascript:void(0);">...</a></li>
+                                <li><a class="page-link" href="?page={{ total_page_num }}&{{ other_param }}"
+                                >{{ total_page_num }}</a></li>
+                            {% endif %}
+
+                            <!-- 下一页 -->
+                            {% if article_info.has_next %}
+                                <li><a class="page-link" href="?page={{ article_info.next_page_number }}
+                                &{{ other_param }}">下一页</a></li>
+                            {% else %}
+                                {#                                <li class="disabled"><a href="javascript:void(0);">下一页</a></li>#}
+                                <li><a class="page-link" href="#">下一页</a></li>
+                            {% endif %}
+
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'js/admin/news/bootstrap-datepicker.min.js' %}"></script>
+    <script src="{% static 'js/admin/news/bootstrap-datepicker.zh-CN.min.js' %}"></script>
+    <script src="{% static 'js/admin/group/group_edit.js' %}"></script>
+{% endblock %}
+

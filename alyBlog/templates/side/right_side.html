@@ -1,0 +1,78 @@
+{% block aside %}
+    <aside class="side">
+        {% block online_class %}
+            <div class="side-activities">
+                <h3 class="activities-title">在线课堂<a href="javascript:void(0)">更多</a></h3>
+                <div class="activities-img">
+                    <a href="javascript:void(0);" target="_blank">
+                        <img src="../../static/images/english.jpg" alt="title">
+                    </a>
+                    <p class="activities-tips">xxx</p>
+                </div>
+                <ul class="activities-list">
+                    <li>
+                        <a href="javascript:void(0);" target="_blank">
+                            <span class="active-status active-start">报名中</span>
+                            <span class="active-title"><a
+                                    href="javascript:void(0);"> Django 项目班</a></span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" target="_blank">
+                            <span class="active-status active-end">已结束</span>
+                            <span class="active-title"><a
+                                    href="https://www.shiguangkey.com/course/2321">Python入门基础班</a></span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        {% endblock %}
+        {% block follow_me %}
+            <div class="side-attention clearfix">
+                <h3 class="attention-title">关注我</h3>
+                <ul class="side-attention-address">
+                    <li>
+                        <a href="javascript:void(0);" target="_blank"><i class="PyWhich py-GitHub"></i>Taka</a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" target="_blank"><i class="PyWhich py-zhihu"
+                                                                         style="color:rgb(0, 108, 226);"></i>Taka</a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" target="_blank"><i class="PyWhich py-weibo"
+                                                                         style="color:rgb(245,92,110);"></i>Taka</a>
+                    </li>
+                </ul>
+                <div class="side-attention-qr">
+                    <p>扫码关注</p>
+                </div>
+            </div>
+        {% endblock %}
+        {% block hot_recommend %}
+            <div class="side-hot-recommend">
+                <h3 class="hot-recommend">热门推荐</h3>
+                <ul class="hot-news-list">
+
+                    <li>
+                        <a href="javascript:void(0)" class="hot-news-contain clearfix">
+                            <div class="hot-news-thumbnail">
+                                <img src="../../static/images/python_web.jpg" alt="">
+                            </div>
+                            <div class="hot-news-content">
+                                <p class="hot-news-title">Django调试工具django-debug-toolbar安装使用教程</p>
+                                <div class="hot-news-other clearfix">
+                                    <span class="news-type">python框架</span>
+                                    <!-- 自带的 -->
+                                    <time class="news-pub-time">11月11日</time>
+                                    <span class="news-author">python</span>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+
+                </ul>
+            </div>
+        {% endblock %}
+
+    </aside>
+{% endblock %}

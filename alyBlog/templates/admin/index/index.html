@@ -1,0 +1,47 @@
+{% extends 'admin/base/base.html' %}
+{% load staticfiles %}
+
+{% block title %}
+    后台主页
+{% endblock %}
+
+{% block user_info %}
+    <li class="nav-item dropdown">
+
+        <a class="nav-link" data-toggle="dropdown" href="#">
+            <span>{{ user.username }}</span>
+            <i class="far fa-user"></i>
+        </a>
+        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+            <a href="#" class="dropdown-item">
+                <a href="{% url 'admin:index' %}">后台管理</a>
+                <a href="{% url 'users:logout' %}">退出登录</a>
+            </a>
+        </div>
+    </li>
+{% endblock %}
+
+{% block left_userInfo %}
+    <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+        <div class="image">
+            <img src="{% static 'images/avatar.jpeg' %}" class="img-circle elevation-2" alt="User Image">
+        </div>
+        <div class="info">
+            <a href="{% url 'admin:index' %}" class="d-block">{{ user.username }}</a>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block content_header %}
+    个人主页
+{% endblock %}
+
+{% block content_header_brief %}
+    个人信息
+{% endblock %}
+
+
+{% block content %}
+    个人信息展示
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends 'admin/base/base.html' %}
+{% load staticfiles %}
+
+{% block title %}
+    文章轮播图
+{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/admin/news/article_banner.css' %}">
+{% endblock %}
+
+{% block content_header %}
+    文章轮播图
+{% endblock %}
+
+{% block content_header_brief %}
+    轮播图增删改查
+{% endblock %}
+
+
+{% block content %}
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-6">
+                    <button class="btn btn-primary fa-pull-left" id="banner-add-btn"><i class="fa fa-plus"></i> 添加轮播图
+                    </button>
+                    <ul class="fa-pull-left tips" style="line-height: 18px;">
+                        <li>支持 JPG/PNG 格式的图片 最多可上传6张</li>
+                        <li>图片的宽度最好在800px以上，比例为4:1</li>
+                    </ul>
+                </div>
+
+
+                    <ul class="col-md-8 banner"  >
+                    {% for banner in banners %}
+                        <li class="card card-info" data-banner-id="{{ banner.id }}" style="margin-top: 20px">
+                            <div class="card-header">
+                                <h3 class="card-title">当前优先级为: <span id="priority-num">{{ banner.priority }}</span></h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="fa-pull-left banner-img">
+                                    <input type="file" name="banner-image-select" style="display: none;">
+                                    <img src="{{ banner.image_url }}" class="img-thumbnail banner-image">
+                                </div>
+                                <div class="fa-pull-left banner-info">
+
+                                    <div class="form-group">
+                                        <label for="priority" class="control-label"
+                                               style="margin-bottom: 10px">选择优先级(第一级最高)：</label>
+
+
+                                        <select name="priority" id="priority" class="form-control  select2">
+                                            <option value="0">--请选择优先级--</option>
+
+                                            {% for id, value in pri_dict.items %}
+
+                                                {% if id == banner.priority %}
+                                                    <option value="{{ id }}" selected>{{ value }}</option>
+                                                {% else %}
+                                                    <option value="{{ id }}">{{ value }}</option>
+                                                {% endif %}
+
+                                            {% endfor %}
+
+                                        </select>
+
+
+                                    </div>
+
+                                </div>
+                            </div>
+                            <!-- /.card-body -->
+                            <div class="card-footer">
+                                <button class="btn btn-danger fa-pull-right del-btn" data-image-url="{{ banner.image_url }}"
+                        data-priority="{{ banner.priority }}">删除
+                                </button>
+
+                                <button class="btn btn-primary fa-pull-right update-btn" data-image-url="{{ banner.image_url }}"
+                        data-priority="{{ banner.priority }}">更新
+                                </button>
+
+                            </div>
+                        </li>
+                    </ul>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+{% block script %}
+    <script src="{% static 'js/admin/news/article_banner.js' %}"></script>
+{% endblock %}
+

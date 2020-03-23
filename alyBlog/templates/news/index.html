@@ -1,0 +1,273 @@
+{% extends "base/base.html" %}
+{% load staticfiles %}
+
+
+{% block title %}
+    主页
+{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1437581_rifqg4of3kc.css">  {# 阿里云矢量图 #}
+{% endblock %}
+
+{% block banner %}
+    <style>
+        .label {
+            display: inline;
+            padding: .2em .6em .3em;
+            font-size: 75%;
+            font-weight: bold;
+            line-height: 1;
+            color: #fff;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: baseline;
+            border-radius: .25em;
+        }
+
+        a.label:hover,
+        a.label:focus {
+            color: #fff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .label:empty {
+            display: none;
+        }
+
+        .btn .label {
+            position: relative;
+            top: -1px;
+        }
+
+        .label-default {
+            background-color: #777;
+        }
+
+        .label-default[href]:hover,
+        .label-default[href]:focus {
+            background-color: #5e5e5e;
+        }
+
+        .label-primary {
+            background-color: #337ab7;
+        }
+
+        .label-primary[href]:hover,
+        .label-primary[href]:focus {
+            background-color: #286090;
+        }
+
+        .label-success {
+            background-color: #5cb85c;
+        }
+
+        .label-success[href]:hover,
+        .label-success[href]:focus {
+            background-color: #449d44;
+        }
+
+        .label-info {
+            background-color: #5bc0de;
+        }
+
+        .label-info[href]:hover,
+        .label-info[href]:focus {
+            background-color: #31b0d5;
+        }
+
+        .label-warning {
+            background-color: #f0ad4e;
+        }
+
+        .label-warning[href]:hover,
+        .label-warning[href]:focus {
+            background-color: #ec971f;
+        }
+
+        .label-danger {
+            background-color: #d9534f;
+        }
+
+        .label-danger[href]:hover,
+        .label-danger[href]:focus {
+            background-color: #c9302c;
+        }
+
+        .iconfont {
+            font-size: 12px;
+            color: #FF0033;
+        }
+
+        .news-title a {
+            color: #00c4ff;
+        }
+
+        .bottom-info li {
+            float: left;
+            margin-right: 10px;
+            font-size: 12px;
+            padding: 5px;
+            max-width: 150px;
+            overflow: hidden;
+            text-decoration: none;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            list-style: none;
+        }
+
+        .bottom-info .bottom-tag {
+            float: right;
+
+        }
+        a{
+           text-decoration: none;
+        }
+
+        .bottom-info li a {
+            text-decoration: none;
+            color: inherit;
+        }
+    </style>
+    <!-- banner start -->
+    <div class="banner">
+        <ul class="pic">
+            {# js里面实现轮播图 #}
+        </ul>
+        <a href="javascript:void(0);" class="btn prev">
+            <i class="PyWhich py-arrow-left"></i></a>
+        <a href="javascript:void(0);" class="btn next">
+            <i class="PyWhich py-arrow-right"></i></a>
+        <ul class="tab">
+            <!-- 按钮数量必须和图片一致 -->
+            {# 轮播图小圆按钮 #}
+        </ul>
+    </div>
+    <!-- banner end -->
+{% endblock %}
+
+{% block hot_news %}
+    <ul class="recommend-news">
+        {% for hot_article in hot_article_list %}
+            <li>
+                <a href="/news/{{ hot_article.id }}" target="_blank">
+                    <div class="recommend-thumbnail">
+                        <img src="{{ hot_article.article.image_url }}" alt="title">
+                    </div>
+                    <p class="info">{{ hot_article.article.titile }}</p>
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
+
+{% block news_tags %}
+    <!--  news-nav start-->
+    <nav class="news-nav">
+        <ul class="clearfix">
+            <li class="active"><a href="javascript:void(0)" data-id="0">最新资讯</a></li>
+            {% for tag in tag_list %}
+                <li><a href="javascript:void(0)" data-id="{{ tag.id }}">{{ tag.name }}</a></li>
+            {% endfor %}
+        </ul>
+    </nav>
+    <!--  news-nav end -->
+{% endblock %}
+
+
+{% block news_contain %}
+    <div class="news-contain">
+        <ul class="news-list">
+            {# 文章类型 #}
+        </ul>
+    </div>
+{% endblock %}
+
+
+{#{% block aside %}#}
+{#    <style>#}
+{#    .article_rank{#}
+{#            text-overflow:ellipsis;  {# 默认溢出后以...填充 #}
+{#    }#}
+{#    </style>#}
+{#    <aside class="side">#}
+{#        {% block online_class %}#}
+{#            <div class="side-activities">#}
+{#                <h3 class="activities-title">在线课堂<a href="javascript:void(0)">更多</a></h3>#}
+{#                <div class="activities-img">#}
+{#                    <a href="javascript:void(0);" target="_blank">#}
+{#                        <img src="../../static/images/english.jpg" alt="title">#}
+{#                    </a>#}
+{#                    <p class="activities-tips">xxx</p>#}
+{#                </div>#}
+{#                <ul >#}
+{#                    {% for article in article_rank %}#}
+{#                        <li>#}
+{#                            <span>{{ forloop.counter }}.</span><a href="/news/{{ article.id }}/"#}
+{#                                                                  title="{{ article.title }}">{{ article.title }}<b><i#}
+{#                                class="iconfont icon-yueduliang"></i>({{ article.clicks }})</b></a></li>#}
+{#                    <li class="article_rank">#}
+{#                        {{ forloop.counter }}.<a href="/news/{{ article.id }}/" >#}
+{#                            {{ article.title }}#}
+{#                        </a>#}
+{#                        <a href="/news/{{ article.id }}/" >#}
+{#                            {{ article.clicks }}#}
+{#                        </a>#}
+{#                    </li>#}
+{#                    {% endfor %}#}
+{##}
+{#                </ul>#}
+{#            </div>#}
+{#        {% endblock %}#}
+{#        {% block follow_me %}#}
+{#            <div class="side-attention clearfix">#}
+{#                <h3 class="attention-title">关注我</h3>#}
+{#                <ul class="side-attention-address">#}
+{#                    <li>#}
+{#                        <a href="javascript:void(0);" target="_blank"><i class="PyWhich py-GitHub"></i>Taka</a>#}
+{#                    </li>#}
+{#                    <li>#}
+{#                        <a href="javascript:void(0);" target="_blank"><i class="PyWhich py-zhihu"#}
+{#                                                                         style="color:rgb(0, 108, 226);"></i>Taka</a>#}
+{#                    </li>#}
+{#                    <li>#}
+{#                        <a href="javascript:void(0);" target="_blank"><i class="PyWhich py-weibo"#}
+{#                                                                         style="color:rgb(245,92,110);"></i>Taka</a>#}
+{#                    </li>#}
+{#                </ul>#}
+{#                <div class="side-attention-qr">#}
+{#                    <p>扫码关注</p>#}
+{#                </div>#}
+{#            </div>#}
+{#        {% endblock %}#}
+{#        {% block hot_recommend %}#}
+{#            <div class="side-hot-recommend">#}
+{#                <h3 class="hot-recommend">标签云</h3>#}
+{#                <ul class="hot-news-list">#}
+{#                    {% for tag in tag_list %}#}
+{#                        <li style="font-size: 15px;margin: 0 5px 15px 0; text-align: center; float: left;#}
+{#                        ">#}
+{#                            <a href="#" style="text-decoration: none;"#}
+{#                               class="label {% cycle 'label-default' 'label-primary' 'label-success' 'label-info' 'label-warning' 'label-danger' %}">#}
+{#                                {{ tag.name }}#}
+{#                            </a>#}
+{##}
+{#                        </li>#}
+{#                    {% endfor %}#}
+{#                </ul>#}
+{#            </div>#}
+{#        {% endblock %}#}
+{##}
+{#    </aside>#}
+{#{% endblock %}#}
+
+
+
+
+
+{% block script %}
+    <script src="{% static 'js/news/index.js' %}"></script>
+    <script src="{% static 'js/news/banner.js' %}"></script>
+{% endblock %}
+

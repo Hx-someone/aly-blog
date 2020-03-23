@@ -1,0 +1,74 @@
+{% extends 'admin/base/base.html' %}
+{% load staticfiles %}
+
+{% block title %}
+    热门文章管理页面
+{% endblock %}
+
+
+{% block content_header %}
+    热门文章管理
+{% endblock %}
+
+{% block content_header_brief %}
+    热门文章增删改查
+{% endblock %}
+
+
+{% block content %}
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12 col-xs-12 col-sm-12">
+                    <div class="box box-primary">
+                        <div class="box-header"><a href="
+{% url 'admin:hot_add' %}">
+                            <button class="btn btn-primary fa-pull-right" id="btn-add">添加热门文章</button></a>
+                        </div>
+                        <br>
+                        <br>
+                        <div class="box-body">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                <tr>
+                                    <th>文章名称</th>
+                                    <th>文章标签</th>
+                                    <th>优先级</th>
+                                    <th>操作</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for hot_article in hot_articles %}
+                                    <tr data-id="{{ hot_article.id }}"
+                                        data-name="{{ hot_article.article.title }}" data-priority="{{ hot_article.priority }}">
+                                        <td><a href="{% url 'news:article_detail' hot_article.id  %}"
+                                        >{{ hot_article.article.title }}</a></td>
+                                        <td>{{ hot_article.article.tag.name }}</td>
+                                        <td>{{ hot_article.priority }}</td>
+                                        <td>
+                                            <button class="btn btn-xs btn-warning btn-edit">
+                                                编辑
+                                            </button>
+                                            <button class="btn btn-xs btn-danger btn-del">
+                                                删除
+                                            </button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
+
+
+
+{% block script %}
+    <script src="{% static 'js/admin/news/hot_article.js' %}"></script>
+{% endblock %}

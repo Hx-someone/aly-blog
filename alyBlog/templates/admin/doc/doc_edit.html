@@ -1,0 +1,133 @@
+{% extends 'admin/base/base.html' %}
+{% load staticfiles %}
+
+{% block title %}
+    {% if doc %}
+        文档更新页
+    {% else %}
+        文档发布页
+    {% endif %}
+{% endblock %}
+
+{% block content_header %}
+    {% if doc %}
+        文档更新
+    {% else %}
+        文档发布
+    {% endif %}
+{% endblock %}
+
+{% block content_header_brief %}
+     {% if doc %}
+        文档更新功能实现
+    {% else %}
+        文档文档发布功能实现
+    {% endif %}
+{% endblock %}
+
+
+{% block content %}
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-8 col-xs-8 col-sm-8">
+                    <div class="box box-primary">
+                        <div class="box-body">
+
+                            <div class="form-group">
+                                <label for="doc-title">文档标题</label>
+                                {% if doc %}
+                                    <input type="text" class="form-control" id="doc-title" name="doc-title"
+                                           placeholder="请输入文章标题"
+                                           value="{{ doc.title }}">
+                                {% else %}
+                                    <input type="text" class="form-control" id="doc-title" name="doc-title"
+                                           placeholder="请输入文章标题" autofocus>
+                                {% endif %}
+                            </div>
+                            <div class="form-group">
+                                <label for="doc-digest">文档简介</label>
+                                {% if doc %}
+                                    <textarea name="doc-digest" id="doc-digest" placeholder="请输入文章摘要"
+                                              class="form-control"
+                                              style="height: 8rem; resize: none;">{{ doc.digest }}</textarea>
+                                {% else %}
+                                    <textarea name="doc-digest" id="doc-digest" placeholder="请输入文章摘要"
+                                              class="form-control"
+                                              style="height: 8rem; resize: none;"></textarea>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-group" id="container">
+                                <label for="image-url">文档缩略图</label>
+                                <div class="input-group">
+                                    {% if doc %}
+                                        <input type="text" class="form-control" id="image-url"
+                                               name="image-url"
+                                               placeholder="请上传图片或输入文档缩略图地址" value="{{ doc.image_url }}">
+                                    {% else %}
+                                        <input type="text" class="form-control" id="image-url"
+                                               name="image-url"
+                                               placeholder="请上传图片或输入文档缩略图地址">
+                                    {% endif %}
+
+                                    <div class="input-group-btn">
+                                        <label class="btn btn-default btn-file">
+                                            上传至服务器 <input type="file" id="upload-image">
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group" >
+                                <label for="doc-url">文档</label>
+                                <div class="input-group">
+                                    {% if doc %}
+                                        <input type="text" class="form-control" id="doc-url"
+                                               name="doc-url"
+                                               placeholder="请上传文档" value="{{ doc.file_url }}">
+                                    {% else %}
+                                        <input type="text" class="form-control" id="doc-url"
+                                               name="doc-url"
+                                               placeholder="请上传文档" >
+                                    {% endif %}
+
+                                    <div class="input-group-btn">
+                                        <label class="btn btn-default btn-file">
+                                            上传至服务器 <input type="file" id="upload-doc">
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="progress" style="display: none">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                         style="width: 0;">0%
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="box-footer">
+                            {% if doc %}
+                                <a href="javascript:void (0);" class="btn btn-primary pull-right" id="btn-pub-doc"
+                                   data-doc-id="{{ doc.id }}">更新文章 </a>
+                            {% else %}
+                                <a href="javascript:void (0);" class="btn btn-primary pull-right"
+                                   id="btn-pub-doc" data-doc-id="{{ doc.id }}">发布文章 </a>
+                            {% endif %}
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'js/admin/plugins/image_upload.js' %}"></script>
+    <script src="{% static 'js/admin/plugins/doc_upload.js' %}"></script>
+    <script src="{% static 'js/admin/doc/doc_pub.js' %}"></script>
+{% endblock %}

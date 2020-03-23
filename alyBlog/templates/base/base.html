@@ -1,0 +1,252 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+{% block meta %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+{% endblock %}
+    <title>{% block title %} IndexPage {% endblock %}</title>
+
+    <link rel="stylesheet" href="{% static 'css/base/reset.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base/common.css' %}">
+    <link rel="stylesheet" href="{% static 'css/news/index.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base/side.css' %}">
+
+    <link rel="stylesheet" href="http://at.alicdn.com/t/font_1437581_pkb54rd238.css">
+    {% block css %}
+    {% endblock %}
+</head>
+<body class="hold-transition sidebar-mini">
+
+{% block header %}
+<header id="header">
+    <div class="mw1200 header-contain clearfix">
+        <h1 class="logo">
+            <a href="javascript:void(0);" class="logo-title">Python</a>
+        </h1>
+        <nav class="nav">
+            <ul class="menu">
+                <li><a href="{% url 'news:index' %}">首页</a></li>
+                <li><a href="{% url 'course:index' %}">课堂</a></li>
+                <li><a href="{% url "docs:index" %}">下载文档</a></li>
+                <li><a href="{% url 'news:search' %}">搜索</a></li>
+            </ul>
+        </nav>
+
+        <div class="login-box">
+            {% if user.is_authenticated %}
+                <div class="author">
+                    <i class="PyWhich py-user"></i>
+                    <span>{{ user.username }}</span>
+                    <ul class="author-menu">
+                        {% if user.is_staff %}
+                            <li>
+                                <a href="{% url 'admin:index' %}">后台管理</a>
+                            </li>
+                        {% endif %}
+                        <li>
+                            <a href="{% url 'users:logout' %}">退出登录</a>
+                        </li>
+                    </ul>
+                </div>
+            {% else %}
+                <div>
+                    <i class="PyWhich py-user"></i>
+                    <span>
+                        <a href="{% url 'users:login' %}" class="login">登录</a> / <a href="{% url 'users:register' %}"
+                                                                                    class="reg">注册</a>
+                    </span>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</header>
+{% endblock %}
+
+
+<!-- main start -->
+{% block main %}
+    <main id="main">
+        <div class="w1200 clearfix">
+            <!-- main-contain start  -->
+            {% block main_contain %}
+                <div class="main-contain">
+                    <!-- banner start -->
+                    {% block banner %}
+                        <div class="banner">
+                            <ul class="pic"><!--淡入淡出banner-->
+
+                            </ul>
+                            <a href="javascript:void(0);" class="btn prev">
+                                <i class="PyWhich py-arrow-left"></i></a>
+                            <a href="javascript:void(0);" class="btn next">
+                                <i class="PyWhich py-arrow-right"></i></a>
+                            <ul class="tab">
+                                <!-- 按钮数量必须和图片一致 -->
+
+
+                            </ul>
+                        </div>
+                    {% endblock %}
+                    <!-- banner end -->
+
+                    <!-- content start -->
+                    {% block content %}
+                        <div class="content">
+                            <!-- recommend-news start -->
+                            {% block hot_news %}
+                                <ul class="recommend-news">
+                                </ul>
+                            {% endblock %}
+                            <!-- recommend-news end -->
+
+                            <!--  news-nav start-->
+                            {% block news_tags %}
+                                <nav class="news-nav">
+                                    <ul class="clearfix">
+
+
+                                    </ul>
+                                </nav>
+                            {% endblock %}
+                            <!--  news-nav end -->
+
+                            <!-- news-contain start -->
+                            {% block news_contain %}
+                                <div class="news-contain">
+                                    <ul class="news-list">
+
+                                    </ul>
+                                </div>
+                                <a href="javascript:void(0);" class="btn-more">加载更多</a>
+                                <!-- btn-more end -->
+                            {% endblock %}
+                        </div>
+                    {% endblock %}
+                    <!-- content end -->
+                </div>
+            {% endblock %}
+            <!-- main-contain  end -->
+
+            <!-- side start -->
+            {% block aside %}
+    <style>
+    .article_rank{
+            text-overflow:ellipsis;  {# 默认溢出后以...填充 #}
+    }
+    </style>
+{#    <aside class="side">#}
+{#        {% block online_class %}#}
+{#            <div class="side-activities">#}
+{#                <h3 class="activities-title">在线课堂<a href="javascript:void(0)">更多</a></h3>#}
+{#                <div class="activities-img">#}
+{#                    <a href="javascript:void(0);" target="_blank">#}
+{#                        <img src="../../static/images/english.jpg" alt="title">#}
+{#                    </a>#}
+{#                    <p class="activities-tips">xxx</p>#}
+{#                </div>#}
+{#                <ul >#}
+{#                    {% for article in article_rank %}#}
+{#                        <li>#}
+{#                            <span>{{ forloop.counter }}.</span><a href="/news/{{ article.id }}/"#}
+{#                                                                  title="{{ article.title }}">{{ article.title }}<b><i#}
+{#                                class="iconfont icon-yueduliang"></i>({{ article.clicks }})</b></a></li>#}
+{#                    <li class="article_rank">#}
+{#                        {{ forloop.counter }}.<a href="/news/{{ article.id }}/" >#}
+{#                            {{ article.title }}#}
+{#                        </a>#}
+{#                        <a href="/news/{{ article.id }}/" >#}
+{#                            {{ article.clicks }}#}
+{#                        </a>#}
+{#                    </li>#}
+{#                    {% endfor %}#}
+{##}
+{#                </ul>#}
+{#            </div>#}
+{#        {% endblock %}#}
+{#        {% block follow_me %}#}
+{#            <div class="side-attention clearfix">#}
+{#                <h3 class="attention-title">关注我</h3>#}
+{#                <ul class="side-attention-address">#}
+{#                    <li>#}
+{#                        <a href="javascript:void(0);" target="_blank"><i class="PyWhich py-GitHub"></i>Taka</a>#}
+{#                    </li>#}
+{#                    <li>#}
+{#                        <a href="javascript:void(0);" target="_blank"><i class="PyWhich py-zhihu"#}
+{#                                                                         style="color:rgb(0, 108, 226);"></i>Taka</a>#}
+{#                    </li>#}
+{#                    <li>#}
+{#                        <a href="javascript:void(0);" target="_blank"><i class="PyWhich py-weibo"#}
+{#                                                                         style="color:rgb(245,92,110);"></i>Taka</a>#}
+{#                    </li>#}
+{#                </ul>#}
+{#                <div class="side-attention-qr">#}
+{#                    <p>扫码关注</p>#}
+{#                </div>#}
+{#            </div>#}
+{#        {% endblock %}#}
+{#        {% block hot_recommend %}#}
+{#            <div class="side-hot-recommend">#}
+{#                <h3 class="hot-recommend">标签云</h3>#}
+{#                <ul class="hot-news-list">#}
+{#                    {% for tag in tag_list %}#}
+{#                        <li style="font-size: 15px;margin: 0 5px 15px 0; text-align: center; float: left;#}
+{#                        ">#}
+{#                            <a href="#" style="text-decoration: none;"#}
+{#                               class="label {% cycle 'label-default' 'label-primary' 'label-success' 'label-info' 'label-warning' 'label-danger' %}">#}
+{#                                {{ tag.name }}#}
+{#                            </a>#}
+{##}
+{#                        </li>#}
+{#                    {% endfor %}#}
+{#                </ul>#}
+{#            </div>#}
+{#        {% endblock %}#}
+{##}
+{#    </aside>#}
+{% include 'base/advert.html' %}
+{% endblock %}
+
+            <!-- side end -->
+        </div>
+    </main>
+{% endblock %}
+<!-- main end -->
+
+<!-- footer start -->
+{% block footer %}
+    <footer id="footer">
+        <div class="footer-box">
+            <div class="footer-content">
+                <p class="top-content">
+                        <span class="link">
+                            <a href="javascript:void(0)">关于Python</a> |
+                            <a href="javascript:void(0)">我就是我</a> |
+                            <a href="javascript:void(0)">人生苦短</a> |
+                            <a href="javascript:void(0)">我用Python</a>
+                        </span>
+                    <span class="about-me">关于我: <i class="PyWhich py-wechat"></i> Taka</span>
+                </p>
+                <p class="bottom-content">
+                    <span>地址： xxxx</span>
+                    <span>联系方式: <a href="tel:400-1567-315">400-1567-315</a> (24小时在线)</span>
+                </p>
+            </div>
+            <p class="copyright-desc">
+                Copyright &copy; 2008 - 2019 xxx有限公司. All Rights Reserved
+            </p>
+        </div>
+    </footer>
+{% endblock %}
+<!-- footer end -->
+
+<script src="{% static 'js/users/jQuery_3.3.1.js' %}"></script>
+<script src="{% static 'js/commons.js' %}"></script>
+<script src="{%  static 'js/csrf.js' %}"></script>
+{% block script %}
+{% endblock %}
+
+</body>
+</html>

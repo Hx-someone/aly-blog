@@ -1,0 +1,128 @@
+{% extends 'base/base.html' %}
+{% load staticfiles %}
+
+{% block title %}
+    文章详情
+{% endblock %}
+
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/news/news-detail.css' %}">
+    <link href="{% static 'mdeditor/css/editormd.min.css' %}" rel="stylesheet">
+    <link href="{% static 'mdeditor/css/editormd.preview.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block main_contain %}
+    <style>
+    .editormd-preview-container, .editormd-html-preview{
+        margin-left: -20px;
+    }
+    </style>
+    <div class="news-contain">
+        <h1 class="news-title">{{ article.title }}</h1>
+        <div class="news-info">
+            <div class="news-info-left">
+                <span class="news-author">{{ article.author.username }}</span>
+                <span class="news-pub-time">{{ article.update_time }}</span>
+                <span class="news-type">{{ article.tag.name }}</span>
+            </div>
+        </div>
+        <br/>
+        <br/>
+        <div class="news-content" id="article-content">
+            {{ article.content | safe }}
+        </div>
+        {#            <meta property="og:description" content="{{ article.content|article_show_markdown}}"/>#}
+        <div class="comment-contain">
+            <div class="comment-pub clearfix">
+                <div class="new-comment">文章评论(<span class="comment-count">{{ article.comment_num }}</span>)
+                </div>
+
+                {# 用户登录后才能评论 #}
+                {% if user.is_authenticated %}
+                    <div class="comment-control logged-comment" article_id="{{ article.id }}">
+                        <input type="text" placeholder="请填写评论">
+                        <button class="comment-btn">发表评论</button>
+                    </div>
+
+                {% else %}
+                    <div class="comment-control please-login-comment" article_id="{{ article.id }}"
+                         style="display: none">
+                        <input type="text" placeholder="请登录后参加评论" readonly>
+                        <button class="comment-btn">发表评论</button>
+                    </div>
+                {% endif %}
+
+
+            </div>
+
+
+            <ul class="comment-list">
+                {# 评论内容 #}
+                {% for comment in comment_queryset_list %}
+                    <li class="comment-item">
+                        <div class="comment-info clearfix">
+                            <img src="../../static/images/avatar.jpeg" alt="avatar" class="comment-avatar">
+                            <span class="comment-user">{{ comment.author }}</span>
+                            <span class="comment-pub-time">{{ comment.update_time }}</span>
+                        </div>
+                        <div class="comment-content" id="content">{{ comment.content }}</div>
+
+                        {# 子评论内容 #}
+                        {% if comment.parent %}
+                            <div class="parent_comment_text">
+                                <div class="parent_username">{{ comment.parent.author }}</div>
+                                <br/>
+                                <div class="parent_content_text">{{ comment.parent.content }}</div>
+                            </div>
+
+                        {% endif %}
+
+                        <div class="comment_time left_float">{{ comment.parent.update_time }}</div>
+                        <a href="javascript:void(0);" class="reply_a_tag right_float">回复</a>
+                        <form class="reply_form left_float" comment_id="{{ comment.comment_id }}" article_id="
+{{ comment.article_id }}">
+                            <textarea class="reply_input"></textarea>
+                            <input type="button" value="回复" class="reply_btn right_float">
+                            <input type="reset" name="" value="取消" class="reply_cancel right_float">
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+    </div>
+
+{% endblock %}
+
+
+
+{% block script %}
+    <script src="{% static 'js/news/news_detail.js' %}"></script>
+    <script src="{% static 'mdeditor/js/jquery.min.js' %}"></script>
+    <script src="{% static 'mdeditor/js/editormd.min.js' %}"></script>
+    <script src="{% static 'mdeditor/js/lib/marked.min.js' %}"></script>
+    <script src="{% static 'mdeditor/js/lib/prettify.min.js' %}"></script>
+    <script src="{% static 'mdeditor/js/lib/raphael.min.js' %}"></script>
+    <script src="{% static 'mdeditor/js/lib/underscore.min.js' %}"></script>
+    <script src="{% static 'mdeditor/js/lib/sequence-diagram.min.js' %}"></script>
+    <script src="{% static 'mdeditor/js/lib/flowchart.min.js' %}"></script>
+    <script src="{% static 'mdeditor/js/lib/jquery.flowchart.min.js' %}"></script>
+    <script>
+        $(function () {
+            // js 解析markdown
+            editormd.markdownToHTML("article-content", {
+                //htmlDecode      : "style,script,iframe",  // you can filter tags decode
+                emoji: true,
+                taskList: true,
+                tex: true,  // 默认不解析
+                flowChart: true,  // 默认不解析
+                sequenceDiagram: true,  // 默认不解析
+            });
+
+            $(".reference-link").each(function (i, obj) {
+                console.log(obj)
+            })
+        })
+    </script>
+{% endblock %}

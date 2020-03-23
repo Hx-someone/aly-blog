@@ -1,0 +1,39 @@
+{% extends 'base/base.html' %}
+{% load staticfiles %}
+
+{% block title %}
+    文档下载
+{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/doc/docDownload.css' %}">
+{% endblock %}
+
+
+
+{% block main_contain %}
+    <div class="main-contain ">
+        <div class="banner">
+            <img src=""
+                 alt="">
+        </div>
+        <div class="pay-doc-contain">
+            <ul class="pay-list">
+                {% for doc in doc_list %}
+                    <li class="pay-item">
+                        <img src="{{ doc.image_url }}" class="pay-img doc">
+                        <div class="d-contain">
+                            <p class="doc-title">{{ doc.title }}</p>
+                            <p class="doc-desc">{{ doc.digest }}</p>
+                            <a href="{% url 'docs:doc_download' doc.id %}" class="pay-price">下载</a>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}
+
+
+
+
