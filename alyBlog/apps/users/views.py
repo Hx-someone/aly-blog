@@ -10,9 +10,17 @@ from users import models
 from users.forms import RegisterForm, LoginForm, ResetPasswordForm
 from utils.res_code.res_code import Code, error_map
 from utils.res_code.json_function import to_json_data
+from django.http import HttpResponse
+from itsdangerous import SignatureExpired,TimedJSONWebSignatureSerializer as Serializer
+from django.conf import settings
 
 
 logger = logging.getLogger("django")
+
+
+
+from alyBlog import settings
+from celery_tasks.celery_email.tasks import send_verify_email
 
 
 class RegisterView(View):
@@ -158,3 +166,29 @@ class ResetPasswordView(View):
 
 
 
+class EmailVerifyView(View):
+    """
+    用户邮箱验证
+    """
+    def get(self,request,token):
+        serializer_obj = Serializer(settings.SECRET_KEY,3600)
+
+        try:
+            username = serializer_obj.loads(token)
+        except SignatureExpired:
+            return HttpResponse("链接已过期")
+
+        username = username.decode()
+
+        user = models.Users.objects.only("is_active").filter(username=username).first()
+        user.is_active = True
+        user.save(update_fields=["is_active"])
+
+        return render(request,'users/login.html')
+
+def test(request):
+    username = "hx120841"
+    to_email = "1570716789@qq.com"
+    send_verify_email.delay(username, to_email, 1)
+
+    return HttpResponse("邮件已发送")

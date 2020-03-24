@@ -12,11 +12,11 @@ if not os.getenv('DJANGO_SETTINGS_MODULE'):
     os.environ['DJANGO_SETTINGS_MODULE'] = 'alyBlog.settings'
 
 # 创建celery应用/实例
-app = Celery('send_sms')
+app = Celery('aly-blog')
 
 # 导入celery配置
 app.config_from_object('celery_tasks.config')
 
 
 # 自动注册celery任务
-app.autodiscover_tasks(['celery_tasks.sms'])
+app.autodiscover_tasks(['celery_tasks.sms','celery_tasks.celery_email'])
