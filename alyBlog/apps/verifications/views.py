@@ -133,6 +133,7 @@ class SmsCodeView(View):
 
             # 使用celery异步处理短信发动任务
             expires = 300
+            print(sms_text)
             send_sms_code.delay(mobile,sms_text,expires,contains.SMS_TEMPLATE)
             return to_json_data(errno=Code.OK,errmsg="短信验证码发送成功")
 
@@ -145,7 +146,6 @@ class SmsCodeView(View):
 
             err_info = '/'.join(err_msg_list)
             return to_json_data(errno=Code.PARAMERR, errmsg=err_info)
-
 
 
 

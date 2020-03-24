@@ -160,7 +160,7 @@
         htmlDecode           : false,          // Open the HTML tag identification 
         pageBreak            : true,           // Enable parse page break [========]
         atLink               : true,           // for @link
-        emailLink            : true,           // for email address auto link
+        emailLink            : true,           // for celery_email address auto link
         taskList             : false,          // Enable Github Flavored Markdown task lists
         emoji                : false,          // :emoji: , Support Github emoji, Twitter Emoji (Twemoji);
                                                // Support FontAwesome icon emoji :fa-xxx: > Using fontAwesome icon web fonts;
