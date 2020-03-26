@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="{% static 'css/admin/base/sweetalert.css' %}">
     <link rel="stylesheet" href="{% static 'css/admin/base/self.css' %}">
 
-    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1491329_kva4j3zc4ug.css"> {# 阿里云矢量图标 #}
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1491329_soa18dtdaa.css"> {# 阿里云矢量图标 #}
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
     {% block css %}
     {% endblock %}
@@ -183,6 +183,15 @@
                                 </li>
                             </ul>
                         </li>
+                        <li class="nav-item has-treeview">
+                            <a href="{% url 'admin:login_log' %}" class="nav-link">
+                                <i class="iconfont icon-fangwenxinxi"></i>
+                                <p>
+                                    访问信息
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                        </li>
                     </ul>
                 </nav>
             {% endblock %}
@@ -239,6 +248,7 @@
 <script src="{% static 'js/admin/base/message.js' %}"></script>
 <script src="{% static 'js/admin/base/sweetalert.min.js' %}"></script>
 <script src="{% static 'js/admin/base/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/csrf.js' %}"></script>
 {% block script %}
 {% endblock %}
 

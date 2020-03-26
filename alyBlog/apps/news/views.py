@@ -1,17 +1,19 @@
 import json
 import logging
-import markdown
+from requests import ReadTimeout
+
 from alyBlog import settings
 
 from django.views import View
 from django.shortcuts import render
 from haystack.views import SearchView
-from django.http import HttpResponseNotFound
+from django.http import HttpResponseNotFound, Http404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from news import contains
+from utils.IPquery import IPquery
 from news import models as _models
-
+from utils.user_config import user_config
 from utils.res_code.res_code import Code, error_map
 from utils.res_code.json_function import to_json_data
 
@@ -26,6 +28,7 @@ class IndexView(View):
     """
 
     def get(self, request):
+
         # 1. 文章标签数据获取
         tag_list = _models.Tags.objects.only("name", "id").filter(is_delete=False)  # 标签数据
 
@@ -34,6 +37,60 @@ class IndexView(View):
                                                                                      "article__image_url").filter(
             is_delete=False).order_by("priority", "-update_time", "-id")
         article_rank = _models.Articles.objects.only("title", "clicks").filter(is_delete=False).order_by("-clicks")[:5]
+
+        # 用户访问信息记录表
+        username = request.user.username  # 用户名
+
+        last_login_time = request.user.last_login  # 登录时间
+
+        is_anonymous = request.user.is_anonymous
+        is_staff = request.user.is_staff
+        is_superuser = request.user.is_superuser
+        if is_anonymous:
+            user_type = "游客"
+        elif not is_anonymous and not is_superuser and not is_staff:
+            user_type = "普通用户"
+        elif is_staff and not is_superuser:
+            user_type = "管理员"
+        elif is_superuser:
+            user_type = "超级管理员"
+        else:
+            user_type = ""
+
+        # 访问用户的IP地址
+        if request.META.get("HTTP_X_FORWARDED_FOR"):
+            ip = request.META.get("HTTP_X_FORWARDED_FOR")
+        else:
+            ip = request.META.get("REMOTE_ADDR")
+
+        # 获取到ip具体的地址和运营商
+        try:
+            ip_address = IPquery.get_ip_sb_address(ip)
+            print("执行的是太平洋")
+        except ReadTimeout:
+            ak = user_config.BD_AK
+            ip_address = IPquery.get_ip_bd_address(ak, ip)
+            print("执行的是百度")
+
+        #
+
+        user_agent = request.META.get("HTTP_USER_AGENT")
+
+        if not user_agent:  # 反爬虫
+            return Http404("Page Not Found!")
+
+        kwargs = {
+            "username": username,
+            "user_type": user_type,
+            "ip": ip,
+            "ip_address": ip_address,
+            "user_agent": user_agent,
+            "last_login_time": last_login_time,
+        }
+        user_info = _models.UserLoginInfo.objects.only("username", "ip", "last_login_time"). \
+            filter(username=username, ip=ip, last_login_time=last_login_time).first()
+        if not user_info:
+            _models.UserLoginInfo.objects.create(**kwargs)
 
         return render(request, "news/index.html", locals())
 
@@ -62,11 +119,8 @@ class ArticleView(View):
                                                                                                "tag__name").filter(
             is_delete=False)
 
-
         article_tag_queryset = article_queryset_total.filter(is_delete=False, tag_id=tag_id) or \
                                article_queryset_total.filter(is_delete=False)
-
-
 
         # 4. 对数据尽心分页
         pagen = Paginator(article_tag_queryset, contains.PER_PAGE_DATA_NUMBER)  # 传递待分页对象 、每页多少个
@@ -81,7 +135,6 @@ class ArticleView(View):
         # 6. 数据序列化
         article_per_page_list = []
         for article in article_list:
-
             article_per_page_list.append({
                 "id": article.id,
                 "title": article.title,
@@ -90,7 +143,7 @@ class ArticleView(View):
                 "clicks": article.clicks,
                 "image_url": article.image_url,
                 "author": article.author.username,
-                "comment_num":article.comment_num,
+                "comment_num": article.comment_num,
                 "tag_name": article.tag.name if article.tag else "",
             })
 
@@ -226,7 +279,7 @@ class ArticleCommentView(View):
 
         return to_json_data(data={
             "data": article_comment.to_dict_data(),
-            "count": article.comment_num   # 文章评论数量
+            "count": article.comment_num  # 文章评论数量
         })
 
 
@@ -256,5 +309,3 @@ class Search(SearchView):
         else:
             show = False
             return super(Search, self).create_response()
-
-

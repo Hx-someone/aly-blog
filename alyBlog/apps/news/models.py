@@ -1,5 +1,6 @@
 from django.db import models
 from utils.models import models as _models
+from utils.get_os.get_os import GetOSInfo
 
 
 class Tags(_models.BaseModel):
@@ -45,7 +46,7 @@ class Articles(_models.BaseModel):
     content = models.TextField(verbose_name="内容", help_text="内容")
     clicks = models.PositiveIntegerField(default=0, verbose_name="文章点击量", help_text="文章点击量")
     image_url = models.URLField(default=" ", verbose_name="图片url", help_text="图片url")
-    comment_num = models.PositiveIntegerField(default=0,verbose_name="评论数", help_text="评论数")
+    comment_num = models.PositiveIntegerField(default=0, verbose_name="评论数", help_text="评论数")
     tag = models.ForeignKey("Tags", on_delete=models.SET_NULL, null=True)
     author = models.ForeignKey("users.Users", on_delete=models.SET_NULL, null=True)
 
@@ -149,7 +150,7 @@ class Comments(_models.BaseModel):
 
     # 自定义字典转化
     def to_dict_data(self):
-        print("评论数量：",self.article.comment_num)
+        print("评论数量：", self.article.comment_num)
         comment_dict_data = {
             "comment_id": self.id,  # 评论id
             "article_id": self.article.id,  # 文章id
@@ -164,3 +165,44 @@ class Comments(_models.BaseModel):
     def __str__(self):
         return "评论内容：{}".format(self.content)
 
+
+class UserLoginInfo(_models.BaseModel):
+    """
+    create user login log
+    field:
+        username
+        username_type
+        ip
+        ip_address
+        supplier
+        user_agent
+        last_login_time
+    """
+    username = models.CharField(max_length=18, verbose_name="用户", help_text="用户")
+    user_type = models.CharField(max_length=32, verbose_name="用户类型", help_text="用户类型")
+    ip = models.GenericIPAddressField(max_length=15, verbose_name="IP", help_text="IP")
+    ip_address = models.CharField(max_length=32, verbose_name="IP地址", help_text="IP地址")
+    # supplier = models.CharField(max_length=32, verbose_name="运营商", help_text="运营商")
+    user_agent = models.CharField(max_length=128, verbose_name="User-Agent", help_text="User-Agent")
+    last_login_time = models.DateTimeField(auto_now=False, auto_now_add=False, verbose_name="登录时间", help_text="登录时间")
+
+    class Meta:
+        ordering = ["-update_time", "-id"]
+        db_table = "tb_user_login_info"
+        verbose_name = "用户登录信息"
+        verbose_name_plural = verbose_name
+
+    def get_os_info(self):
+        """获取用户信息中浏览器和操作系统信息"""
+        info_obj = GetOSInfo(self.user_agent)
+        os_name = info_obj.get_os()["family"]
+        browser_name = info_obj.get_browser()["family"]
+        info = {
+            "os_name": os_name,
+            "browser_name": browser_name,
+
+        }
+        return info
+
+    def __str__(self):
+        return "用户登录信息：{}:{}".format(self.username, self.ip_address)

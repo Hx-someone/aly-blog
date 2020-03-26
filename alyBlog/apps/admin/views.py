@@ -26,6 +26,7 @@ from admin.forms import ArticleEditForm, DocEditForm, CourseEditForm
 from utils.page.per_page import get_page_data
 from utils.res_code.res_code import Code, error_map
 from utils.res_code.json_function import to_json_data
+from celery_tasks.uploadimage.tasks import upload_server_images
 
 logger = logging.getLogger("django")
 
@@ -59,6 +60,7 @@ class ArticleTagsView(PermissionRequiredMixin, View):  # 使用PermissionRequire
 
     # 查
     def get(self, request):
+
         tags = models.Tags.objects.values("id", "name").annotate(
             article_counts=Count(
                 "articles")).filter(is_delete=False).order_by("-article_counts",
@@ -403,7 +405,8 @@ class MarkdownImageView(View):
             return JsonResponse({'success': 0, 'message': '图片太大了'})
 
         try:
-            upload_image = client.upload_by_buffer(image_file.read(), file_ext_name=image_ext_name)
+            # upload_image = client.upload_by_buffer(image_file.read(), file_ext_name=image_ext_name)
+            upload_image = upload_server_images.delay(image_file.read(), file_ext_name=image_ext_name)
         except Exception as e:
             logger.info("图片上传异常：{}".format(e))
             return JsonResponse({'success': 0, 'message': '图片上传失败'})
@@ -928,7 +931,7 @@ class DocPubView(PermissionRequiredMixin, View):
     route:/admin/doc/pub/
     permissions:add_docs/view_docs
     """
-    permission_required = ("docs.add_docs","docs.view_docs")
+    permission_required = ("docs.add_docs", "docs.view_docs")
     raise_exception = True
 
     def get(self, request):
@@ -971,7 +974,7 @@ class DocEditView(PermissionRequiredMixin, View):
     route:/admin/doc/edit/<int:doc_id>
     permissions:change_docs/delete_docs/view_docs
     """
-    permission_required = ("docs.delete_docs", "docs.change_docs","docs.view_docs")
+    permission_required = ("docs.delete_docs", "docs.change_docs", "docs.view_docs")
     raise_exception = True
 
     def get(self, request, doc_id):
@@ -1151,13 +1154,13 @@ class CourseIndexView(PermissionRequiredMixin, View):
 
 
 # 课程删除和更新
-class CourseEditView(PermissionRequiredMixin,View):
+class CourseEditView(PermissionRequiredMixin, View):
     """
     course video delete and change page
     route:/admin/course/edit/<int:course_id>
     permissions:view_course/change_course/delete_course
     """
-    permission_required = ("course.view_course","course.change_course","course.delete_course")
+    permission_required = ("course.view_course", "course.change_course", "course.delete_course")
     raise_exception = True
 
     def get(self, request, course_id):
@@ -1218,13 +1221,13 @@ class CourseEditView(PermissionRequiredMixin,View):
 
 
 # 课程发布
-class CoursePubView(PermissionRequiredMixin,View):
+class CoursePubView(PermissionRequiredMixin, View):
     """
     course video add page
     route:/admin/course/pub/
     permissions:view_course/add_course/
     """
-    permission_required = ("course.view_course","course.add_course")
+    permission_required = ("course.view_course", "course.add_course")
     raise_exception = True
 
     def get(self, request):
@@ -1265,13 +1268,13 @@ class CoursePubView(PermissionRequiredMixin,View):
 
 
 # 用户组管理展示
-class GroupIndexView(PermissionRequiredMixin,View):
+class GroupIndexView(PermissionRequiredMixin, View):
     """
     permission group show  page
     route:/admin/group/
     permissions:view_group
     """
-    permission_required = ("group.view_group", )
+    permission_required = ("group.view_group",)
     raise_exception = True
 
     def get(self, request):
@@ -1284,13 +1287,13 @@ class GroupIndexView(PermissionRequiredMixin,View):
 
 
 # 用户组删除和更新
-class GroupEditView(PermissionRequiredMixin,View):
+class GroupEditView(PermissionRequiredMixin, View):
     """
    permission group delete and change  page
    route:/admin/group/edit/<int:gro_id>/
    permissions:view_group/change_group/delete_group
    """
-    permission_required = ("group.view_group","group.change_group","group.delete_group")
+    permission_required = ("group.view_group", "group.change_group", "group.delete_group")
     raise_exception = True
 
     def get(self, request, gro_id):
@@ -1360,7 +1363,7 @@ class GroupEditView(PermissionRequiredMixin,View):
 
 
 # 用户组创建
-class GroupPubView(PermissionRequiredMixin,View):
+class GroupPubView(PermissionRequiredMixin, View):
     """
       permission group add  page
       route:/admin/group/pub/
@@ -1371,7 +1374,7 @@ class GroupPubView(PermissionRequiredMixin,View):
 
     def get(self, request):
         permissions = Permission.objects.only("name").all()
-        return render(request, 'admin/group/group_edit.html',context={"permissions":permissions})
+        return render(request, 'admin/group/group_edit.html', context={"permissions": permissions})
 
     def post(self, request):
 
@@ -1417,39 +1420,40 @@ class GroupPubView(PermissionRequiredMixin,View):
 
 
 # 用户展示
-class UserIndexView(PermissionRequiredMixin,View):
+class UserIndexView(PermissionRequiredMixin, View):
     """
     user show page
     route:/admin/user/
     permissions:view_users
     """
-    permission_required = ("users.view_users", )
+    permission_required = ("users.view_users",)
     raise_exception = True
 
-    def get(self,request):
-        users = Users.objects.only("username","is_staff","is_superuser","groups__name").filter(is_active=True)
-        return render(request,"admin/user/user_index.html",locals())
+    def get(self, request):
+        users = Users.objects.only("username", "is_staff", "is_superuser", "groups__name").filter(is_active=True)
+        return render(request, "admin/user/user_index.html", locals())
+
 
 # 用户删除和修改
-class UserEditView(PermissionRequiredMixin,View):
+class UserEditView(PermissionRequiredMixin, View):
     """
     user delete and change page
     route:/admin/user/edit/<int:user_id>/
     permissions:view_users/change_users/delete_users
     """
-    permission_required = ("users.view_users","users.change_users","users.delete_users")
+    permission_required = ("users.view_users", "users.change_users", "users.delete_users")
     raise_exception = True
 
-    def get(self,request,user_id):
-        user_instance = Users.objects.filter(is_active=True,id=user_id).first()
+    def get(self, request, user_id):
+        user_instance = Users.objects.filter(is_active=True, id=user_id).first()
 
         if user_instance:
             groups = Group.objects.only("name").all()
-            return render(request,"admin/user/user_add.html",locals())
+            return render(request, "admin/user/user_add.html", locals())
         else:
             return Http404("Update user not exist")
 
-    def delete(self,request,user_id):
+    def delete(self, request, user_id):
         user_instance = Users.objects.only("id").filter(id=user_id).first()
         if user_instance:
             user_instance.groups.clear()  # 去除用户组
@@ -1458,9 +1462,9 @@ class UserEditView(PermissionRequiredMixin,View):
             user_instance.save()
             return to_json_data(errmsg='用户删除成功')
         else:
-            return to_json_data(errno=Code.PARAMERR,errmsg="删除的用户不存在")
+            return to_json_data(errno=Code.PARAMERR, errmsg="删除的用户不存在")
 
-    def put(self,request,user_id):
+    def put(self, request, user_id):
         user_instance = Users.objects.filter(id=user_id).first()
         if not user_instance:
             return to_json_data(errno=Code.NODATA, errmsg='该用户不存在')
@@ -1514,3 +1518,89 @@ class UserEditView(PermissionRequiredMixin,View):
         user_instance.is_active = bool(is_active)
         user_instance.save()
         return to_json_data(errmsg='用户组更新成功')
+
+
+# 用户访问日志
+class LoginLogView(View):
+    """
+    user login log
+    route:/admin/login_log  get
+    route:/admin/login_log/edit/<int:info_id>/ delete
+    """
+
+    def get(self, request):
+        user_login_info = models.UserLoginInfo.objects. \
+            only("username", "user_type", "ip", "ip_address", "user_agent", "last_login_time").filter()
+        try:
+            start_time = request.GET.get("start_time", "").strip()
+            start_time = datetime.strptime(start_time, "Y%m%d%")
+        except Exception as e:
+            start_time = ""
+
+        # 3.2 判断结束时间end_time
+        try:
+            end_time = request.GET.get("end_time", "").strip()
+            end_time = datetime.strptime(end_time, "Y%m%d%")
+        except Exception as e:
+
+            end_time = ""
+
+        if start_time and not end_time:
+            user_login_info = user_login_info.filter(last_login_time__lte=start_time)
+
+        if end_time and not start_time:
+            user_login_info = user_login_info.filter(last_login_time__gte=end_time)
+
+        if start_time and end_time:
+            user_login_info = user_login_info.filter(last_login_time__range=(start_time, end_time))
+            if not user_login_info:
+                return to_json_data(errno=Code.PARAMERR, errmsg=error_map[Code.PARAMERR])
+
+        username = request.GET.get("username", "").strip()
+        if user_login_info:
+            user_login_info = user_login_info.filter(is_delete=False, username__icontains=username)
+
+        try:
+            page_num = int(request.GET.get("page", 1))
+        except Exception as e:
+
+            logger.info("页码格式错误：{}".format(e))
+            page_num = 1
+
+        page_obj = Paginator(user_login_info, contains.PER_PAGE_NUMBER)
+
+        try:
+            login_info = page_obj.page(page_num)
+        except EmptyPage:
+            login_info = page_obj.page(page_obj.num_pages)
+
+        pages_data = get_page_data(page_obj, login_info)
+
+        start_time = start_time.strftime("%Y%m%d") if start_time else ""
+        end_time = end_time.strftime("%Y%m%d") if end_time else ""
+
+        data = {
+            'login_info': login_info,
+            'paginator': page_obj,
+            'start_time': start_time,
+            'end_time': end_time,
+            'username': username,
+            'other_param': urlencode({
+                'start_time': start_time,
+                'end_time': end_time,
+                'username': username
+            })
+        }
+        data.update(pages_data)
+
+        return render(request, 'admin/login_log/login_log.html', context=data)
+
+    def delete(self, request, info_id):
+        info = models.UserLoginInfo.objects.only("id").filter(id=info_id).first()
+        if not info:
+            return to_json_data(errno=Code.PARAMERR, errmsg=error_map[Code.PARAMERR])
+
+        info.is_delete = True
+        info.save(update_fields=["is_delete"])
+
+        return to_json_data(errmsg="成功删除登录日志信息")

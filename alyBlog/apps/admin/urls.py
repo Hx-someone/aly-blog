@@ -48,4 +48,7 @@ urlpatterns = [
 
     path("user/", views.UserIndexView.as_view(), name="user"),
     path("user/edit/<int:user_id>/", views.UserEditView.as_view(), name="user_edit"),
+
+    path("login_log/", views.LoginLogView.as_view(), name='login_log'),
+    path("login_log/edit/<int:info_id>/", views.LoginLogView.as_view(), name='login_log_edit'),
 ]
