@@ -28,6 +28,8 @@ class IndexView(View):
     """
 
     def get(self, request):
+        # 获取到session中data
+        session_ip = request.session.get("ip","")
 
         # 1. 文章标签数据获取
         tag_list = _models.Tags.objects.only("name", "id").filter(is_delete=False)  # 标签数据
@@ -66,13 +68,10 @@ class IndexView(View):
         # 获取到ip具体的地址和运营商
         try:
             ip_address = IPquery.get_ip_sb_address(ip)
-            print("执行的是太平洋")
+
         except ReadTimeout:
             ak = user_config.BD_AK
             ip_address = IPquery.get_ip_bd_address(ak, ip)
-            print("执行的是百度")
-
-        #
 
         user_agent = request.META.get("HTTP_USER_AGENT")
 
@@ -87,9 +86,10 @@ class IndexView(View):
             "user_agent": user_agent,
             "last_login_time": last_login_time,
         }
-        user_info = _models.UserLoginInfo.objects.only("username", "ip", "last_login_time"). \
-            filter(username=username, ip=ip, last_login_time=last_login_time).first()
-        if not user_info:
+
+        # 判断session中是否有ip,用来判断访问重复访问一个页面用户信息被重复记录
+        if (not session_ip) or (session_ip and ip != session_ip):
+            request.session["ip"] = ip
             _models.UserLoginInfo.objects.create(**kwargs)
 
         return render(request, "news/index.html", locals())

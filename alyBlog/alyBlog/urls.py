@@ -27,6 +27,6 @@ urlpatterns = [
     path("course/", include("course.urls")),
     path("admin/", include("admin.urls")),
     path("bd/", include("BDUser.urls")),
-    # path('mdeditors/', include('mdeditors.urls'))
-
+    path('wxlogin/',include("wxlogin.urls")),
+    path('qqlogin/',include("qqlogin.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -50,9 +50,8 @@ INSTALLED_APPS = [
     "admin",
     "BDUser",
     "news.templatetags",
-
-
-
+    "wxlogin",
+    "qqlogin",
 ]
 
 MIDDLEWARE = [

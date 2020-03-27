@@ -4,11 +4,11 @@
 @Author  : 半纸梁
 @File    : tasks.py
 """
-
-from celery_tasks.main import app
 from django.core.mail import send_mail
-from alyBlog import settings
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+
+from alyBlog import settings
+from celery_tasks.main import app
 from utils.user_config import user_config
 
 

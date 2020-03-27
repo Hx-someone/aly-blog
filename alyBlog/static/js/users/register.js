@@ -30,7 +30,7 @@ $(function () {
     function generateImageCode() {
         sImageCodeId = generateUUID();  //这里不能有let这相当于对前面的sImageCodeId进行修改
         // console.log("第一个uuid:"+sImageCodeId);
-        let imageCodeUrl = '/image_code/'+sImageCodeId+'/';  //拼接图片验证码请求路径
+        let imageCodeUrl = '/image_code/'+sImageCodeId+"/";  //拼接图片验证码请求路径
         $img.attr('src',imageCodeUrl);  //给图片添加src链接 路径
 
     }
@@ -273,36 +273,6 @@ $(function () {
 
     });
 
-    // get cookie using jQuery
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            let cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                let cookie = jQuery.trim(cookies[i]);
-                // Does this cookie string begin with the name we want?
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-
-   function csrfSafeMethod(method) {
-        // these HTTP methods do not require CSRF protection
-        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-   }
-
-    // Setting the token on the AJAX request
-    $.ajaxSetup({
-        beforeSend: function (xhr, settings) {
-             if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
-             }
-        }
-    });
 
 });
 
