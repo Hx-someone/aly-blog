@@ -14,10 +14,10 @@ $(function () {
         //前端校验
         //1.判断用户名是否为空
         if(sUsername===""){
-            alert("用户名输入为空，请重新输入");
+            message.showError("用户名输入为空，请重新输入");
             return
         }else if(!(/\w{5,18}/).test(sUsername)){
-            alert("用户名输入格式不正确，请重新输入");
+            message.showError("用户名输入格式不正确，请重新输入");
             return
         }
     }
@@ -32,10 +32,10 @@ $(function () {
 
         //1.判断用户名是否为空
         if($userAccount===""){
-            alert("用户名输入为空，请重新输入");
+            message.showError("用户名输入为空，请重新输入");
             return
         }else if(!(/\w{5,18}/).test($userAccount)){
-            alert("用户名输入格式不正确，请重新输入");
+            message.showError("用户名输入格式不正确，请重新输入");
             return
         }
 
@@ -53,7 +53,7 @@ $(function () {
             contentType:"application/json;charset=utf-8",
             success:function (res) {
                 if(res.errno==="200"){
-                    alert("恭喜登陆成功");
+                    message.showSuccess("恭喜登陆成功");
                     setTimeout(function(){
                         // window.location.href = document.referrer;  // 登录成功后跳转到登录界面  document.referrer  回到上一个页面
                         window.location.href = '/news/index/';  // 登录成功后跳转到index页面
@@ -68,11 +68,11 @@ $(function () {
 
                     },800);
                 }else{
-                    alert("登录失败"+res.errmsg)
+                    message.showError("登录失败"+res.errmsg)
                 }
             },
             error:function () {
-                alert("注册ajax,服务器超时，请重试")
+                message.showError("注册ajax,服务器超时，请重试")
             }
     })
     });

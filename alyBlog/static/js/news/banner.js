@@ -84,11 +84,11 @@ $(function () {
 
                 } else {
                     // 登录失败，打印错误信息
-                    alert(res.errmsg);
+                    message.showError(res.errmsg);
                 }
             })
             .fail(function () {
-                alert('服务器超时，请重试！');
+                message.showError('服务器超时，请重试！');
             });
     }
 

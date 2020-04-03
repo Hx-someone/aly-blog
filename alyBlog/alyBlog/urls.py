@@ -29,4 +29,5 @@ urlpatterns = [
     path("bd/", include("BDUser.urls")),
     path('wxlogin/',include("wxlogin.urls")),
     path('qqlogin/',include("qqlogin.urls")),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

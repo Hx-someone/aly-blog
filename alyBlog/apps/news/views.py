@@ -283,6 +283,7 @@ class ArticleCommentView(View):
         })
 
 
+
 class Search(SearchView):
     template = 'news/search.html'
 

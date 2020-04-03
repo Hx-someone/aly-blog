@@ -45,5 +45,10 @@
 
 
 {% block script %}
-    <script src="{% static 'js/users/login.js' %}"></script>
+{#    <script src="{% static 'js/users/login.js' %}"></script>#}
+    <script type="text/javascript" src="{% static 'js/encrypt/crypto-js.js' %}"></script>
+    <script src="{% static 'js/encrypt/encrypt_func.js' %}"></script>
+    <script src="{% static 'js/encrypt/enlogin.js' %}"></script>
+
+
 {% endblock %}

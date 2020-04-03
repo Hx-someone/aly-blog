@@ -101,7 +101,7 @@ $(function () {  //增删改查
                         }
                     })
                     .fail(function () {
-                        alert("服务器超时，请重试！")
+                        message.showError("服务器超时，请重试！")
                     })
 
 

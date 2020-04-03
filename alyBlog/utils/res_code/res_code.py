@@ -15,6 +15,7 @@ class Code:
     METHERR = "4005"
     SMSERROR = "4006"
     SMSFAIL = "4007"
+    SLIDEFAIL = "4008"
 
     SESSIONERR = "4101"
     LOGINERR = "4102"
@@ -36,6 +37,7 @@ error_map = {
     Code.METHERR: "方法错误",
     Code.SMSERROR: "发送短信验证码异常",
     Code.SMSFAIL: "发送短信验证码失败",
+    Code.SLIDEFAIL: "图形验证码校验失败",
 
     Code.SESSIONERR: "用户未登录",
     Code.LOGINERR: "用户登录失败",

@@ -249,6 +249,77 @@ class ResetPasswordForm(forms.Form):
 
 
 
+class SlideLoginForm(forms.Form):
+    """
+        check login field
+        param: login_name、password、is_remember_me
+        """
+    # 1. 校验字段
+    username = forms.CharField()
+    password = forms.CharField(
+        max_length=18,
+        min_length=6,
+        error_messages={
+            "max_length": "密码格式不正确",
+            "min_length": "密码格式不正确",
+            "required": "密码不能为空",
+        }
+    )
+    remember = forms.BooleanField(required=False)
+
+    # 2. 重写__init__获取到request数据
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop("request")
+        super(SlideLoginForm, self).__init__(*args, **kwargs)
+
+    # 3. 单独校验login_name是用户名还是手机号
+
+    def clean_login_name(self):
+        login_name = self.cleaned_data.get("username")
+
+        # 判断登录名是否为空
+        if not login_name:
+            raise forms.ValidationError("登录名不能为空")
+        # 判断用户名格式满不满足用户名或者手机号格式
+        if not (re.match(r'^1[3-9]\d{9}', login_name)) and len(login_name) < 5 or len(login_name) > 18:
+            raise forms.ValidationError("登录名格式不正确")
+
+        return login_name
+
+    # 4. 联合校验获取清洗后的数据
+
+    def clean(self):
+        cleaned_data = super().clean()
+        login_name = cleaned_data.get("username")
+        password = cleaned_data.get("password")
+        remember_me = cleaned_data.get("remember")
+
+        user_queryset = models.Users.objects.filter(Q(username=login_name) | Q(mobile=login_name))
+
+        # 5. 从数据库中获取用户信息进行判断
+        if user_queryset:
+            user = user_queryset.first()
+
+            # 6. 判断密码是否匹配
+            if user.check_password(password):
+
+                # 7. 判断是否勾选remember_me
+                if remember_me:
+
+                    # 8. 设置session过期时间
+                    self.request.session.set_expiry(contains.SESSION_EXPIRE_TIME)  # None是14天
+                else:
+                    self.request.session.set_expiry(0)
+
+                # 9. 给登录设置session
+                login(self.request, user)
+            else:
+                raise forms.ValidationError("密码不正确，请重新输入")
+        else:
+            raise forms.ValidationError("用户名不存在，请重新输入")
+
+
+
 
 
 

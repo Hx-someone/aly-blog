@@ -151,5 +151,58 @@ class SmsCodeView(View):
 
 
 
+pc_geetest_id = "b46d1900d0a894591916ea94ea91bd2c"
+pc_geetest_key= "36fc3fe98530eea08dfc6ce76e3d24c4"
+
+
+from geetest import GeetestLib
+from django.shortcuts import render
+class SlideInitView(View):
+
+    def get(self,reqeust,t):
+        """初始化，获取到流水表示并设置状态码"""
+        user_id = 'test'
+        gt = GeetestLib(pc_geetest_id, pc_geetest_key)
+        status = gt.pre_process(user_id)
+        if not status:
+            status = 2
+        reqeust.session[gt.GT_STATUS_SESSION_KEY] = status
+        reqeust.session["user_id"] = user_id
+        response_str = gt.get_response_str()
+        return HttpResponse(response_str)
+
+
+class SlideIndexView(View):
+    def get(self,request):
+        """页面展示"""
+        return render(request,'users/slide_login.html')
+
+
+
+class SlideVerifyView(View):
+    def post(self,request):
+        """二次校验，进行登录"""
+        gt = GeetestLib(pc_geetest_id, pc_geetest_key)
+        json_data = request.body
+        if not json_data:
+            return HttpResponse("未传参")
+        dict_data = json.loads(json_data)
+        challenge = dict_data.get(gt.FN_CHALLENGE, "")
+        validate = dict_data.get(gt.FN_VALIDATE, "")
+        seccode = dict_data.get(gt.FN_SECCODE, "")
+        status = request.session[gt.GT_STATUS_SESSION_KEY]
+        user_id = request.session["user_id"]
+        if status:
+            result = gt.success_validate(challenge, validate, seccode, user_id)
+        else:
+            result = gt.failback_validate(challenge, validate, seccode)
+            request.session["user_id"] = user_id
+        result = "<html><body><h1>登录成功</h1></body></html>" if result else "<html><body><h1>登录失败</h1></body></html>"
+        return HttpResponse(result)
+
+
+
+
+
 
 

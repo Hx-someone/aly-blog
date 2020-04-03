@@ -18,4 +18,10 @@ urlpatterns = [
 
     re_path("active/(?P<token>.*)/",views.EmailVerifyView.as_view(),name='active'),
     path('test/',views.test,name="test"),
+
+    path('slide/', views.show_slide_index,name="slide"), # 显示主页
+    path('slide/register-slide/<t>/', views.SlideInitView.as_view(), name="init"),  # 初始化
+    path('slide/login/', views.SlideLoginView.as_view(),name="login"),
+
+
 ]

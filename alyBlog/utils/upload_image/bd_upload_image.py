@@ -25,9 +25,9 @@ class BdUploadImage(object):
     def upload(self, bucket, key, data):
         """
         图片存储库名、文件名、图片二进制数据
-        :param bucket:
-        :param key:
-        :param data:
+        :param bucket:图片存储库名
+        :param key:文件名
+        :param data:图片二进制数据
         :return:
         """
         res = self.client.append_object_from_string(bucket_name=bucket, key=key, data=data)

@@ -83,11 +83,11 @@ $(function () {
                     sReturnValue = "";
                 }else{
                     sReturnValue="success";
-                    alert("用户名可以正常使用")
+                    message.showSuccess("用户名可以正常使用")
                 }
             },
             error:function(){
-                alert("用户名ajax,服务器超时，请重新输入");
+                message.showError("用户名ajax,服务器超时，请重新输入");
                 sReturnValue = "";
             }
         });
@@ -107,10 +107,10 @@ $(function () {
         // 前端校验
         if (sMobile === ""){
             // alert("手机号输入为空");
-            alert("手机号为空");
+            message.showError("手机号为空");
 
         }else if(!(/^1[3-9]\d{9}/).test(sMobile)){
-            alert("请输入正确的手机号格式") ;
+            message.showError("请输入正确的手机号格式") ;
 
         }
         //ajax请求判断数据库是否存在  后端校验
@@ -121,15 +121,15 @@ $(function () {
             async:false,  // 关闭异步
             success:function (arg) {
                 if(arg.data.count !== 0){
-                    alert(sMobile+"手机号已被注册，请重新输入");
+                    message.showError(sMobile+"手机号已被注册，请重新输入");
                     sReturnMobileValue = "";
                 }else{
-                    alert(sMobile+"手机号能正常使用");
+                    message.showSuccess(sMobile+"手机号能正常使用");
                     sReturnMobileValue = "success";
                 }
             },
             error:function () {
-                alert("手机号ajax,服务器超时，请重新输入");
+                message.showError("手机号ajax,服务器超时，请重新输入");
                 sReturnMobileValue = "";
             }
         });
@@ -140,20 +140,20 @@ $(function () {
     $smsCodeBtn.click(function(){
         // 判定手机号是否有输入
         if ( fn_check_mobile() !== "success"){
-            alert("手机号为空0");
+            message.showError("手机号为空");
             return
         }
         // 判断用户是否输入图形验证码
         let text = $smsCodeText.val();
         if (!text){
-            alert("请输入图形验证码");
+            message.showError("请输入图形验证码");
             return
         }
 
         // 判断UUID
         if(!sImageCodeId){
             console.log("第2个"+sImageCodeId);
-            alert("图形UUID为空");
+            message.showError("图形UUID为空");
             return
         }
         let dataParams={
@@ -168,7 +168,7 @@ $(function () {
             success:function(arg){
                 console.log(arg);
                 if(arg.errno==="200"){   // errno: "200", errmsg: "短信发送正常", data: null
-                    alert("短信验证码发送成功");
+                    message.showError("短信验证码发送成功");
                     //倒计时功能
                     let num = 60;
                     // 设置计时器
@@ -184,11 +184,11 @@ $(function () {
 
                     },1000)
                 }else{
-                    alert(arg.errmsg);
+                    message.showError(arg.errmsg);
                 }
             },
             error:function(){
-                alert("短信验证ajax,服务器超时，请重试")
+                message.showError("短信验证ajax,服务器超时，请重试")
             }
         })
     });
@@ -208,34 +208,35 @@ $(function () {
         //前端对前面5项进行判定
         //判断用户名是否已被注册
         if (fn_check_username() !=="success"){
-            //alert("用户已被注册，请重新输入");
+            message.showError("用户已被注册，请重新输入");
             return
         }
         //判断手机号是否已被注册
         if(fn_check_mobile() !=="success"){
+            message.showError("手机号已被注册，请重新输入");
             return
         }
         //判断密码或者确认密码是否为空
         if((!sPassword) || (!sPasswordRepeat)){
-            alert("密码或者用户密码不能为空");
+            message.showError("密码或者用户密码不能为空");
             return
         }
 
         //判断密码和确认密码长度是否合适
         if ((sPassword.length<6 || sPassword.length>20)||(sPasswordRepeat.length<6 || sPasswordRepeat.length>20)){
-            alert("密码长度不在6-20范围内");
+            message.showError("密码长度不在6-20范围内");
             return
         }
 
         //判断密码和确认密码是否一致
         if(sPassword !== sPasswordRepeat){
-            alert("两次输入的密码不一致");
+            message.showError("两次输入的密码不一致");
             return
         }
 
         //判断短信验证码输入位数是否为6位
         if(!(/^\d{6}$/).test(sSmsCode)){
-            alert("短信验证码长度不正确");
+            message.showError("短信验证码长度不正确");
             return
         }
 
@@ -257,17 +258,17 @@ $(function () {
             dataType:"json",   //后端返回给前端的数据类型
             success:function (arg) {
                 if(arg.errno==="200"){
-                    alert("恭喜注册成功");
+                    message.showSuccess("恭喜注册成功");
                     //这里需要改进后台管理时
                     setTimeout(function(){
                         window.location.href = "/users/login/";  //注册成功后跳转到登录界面  document.referrer  回到上一个页面
                     },1500);
                 }else{
-                    alert("注册失败："+arg.errmsg)
+                    message.showError("注册失败："+arg.errmsg)
                 }
             },
             error:function () {
-                alert("注册ajax,服务器超时，请重试")
+                message.showError("注册ajax,服务器超时，请重试")
             }
         })
 

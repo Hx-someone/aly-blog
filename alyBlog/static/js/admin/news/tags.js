@@ -107,7 +107,7 @@ $(function () {  //增删改查
                         if (res.errno==="200"){
                             $(_this).parents("div").parents("div").data("priority",inputval);  //更新标签
                             let sPriNum = $("#priority-num");
-                            sPriNum.text
+                             // sPriNum.text
                             // $(_this).parent("tr").data("name",inputval); //更新data-name的值没有解决
                             swal.close();
                             message.showSuccess("标签修改成功")

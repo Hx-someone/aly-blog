@@ -25,7 +25,7 @@ $(function () {
 
             //判断评论内容是是否为空
             if (!content) {
-                alert("评论内容为空，请重新输入");
+                message.showError("评论内容为空，请重新输入");
             }
 
             //构造ajax请求参数
@@ -78,17 +78,17 @@ $(function () {
                         $this.prev().val("");   //清空输入框
                         $this.parent().hide();   //关闭评论框
                     } else if (res.errno = "4101") {
-                        alert("请登录后再评论");
+                        message.showError("请登录后再评论");
                         setTimeout(function () {
                             //重定向到登录界面
                             window.location.href = "/users/login"
                         }, 800)
                     } else {
-                        alert(res.errmsg)
+                        message.showError(res.errmsg)
                     }
                 })
                 .fail(function () {
-                    alert("服务器超时，请重试！")
+                    message.showError("服务器超时，请重试！")
                 })
 
 
@@ -110,11 +110,11 @@ $(function () {
                         window.location.href = "/users/login";
                     }, 800)
                 } else {
-                    alert(res.message);
+                    message.showError(res.message);
                 }
             })
             .fail(function () {
-                alert("服务器超时，请重试！");
+                message.showError("服务器超时，请重试！");
             })
     });
 
@@ -128,7 +128,7 @@ $(function () {
 
 
         if (!content) {
-            alert("评论内容为空，请重新输入！");
+            message.showError("评论内容为空，请重新输入！");
             return
         }
         let sDataParams = {
@@ -170,17 +170,17 @@ $(function () {
                     $('.comment-list').prepend(html_content);
                     $this.prev().val("");   //清空输入框
                 } else if (res.errno = "4101") {
-                    alert("请登录后再评论");
+                    message.showError("请登录后再评论");
                     setTimeout(function () {
                         //重定向到登录界面
                         window.location.href = "/users/login";
                     }, 800)
                 } else {
-                    alert(res.errmsg)
+                    message.showError(res.errmsg)
                 }
             })
             .fail(function () {
-                alert("服务器超时，请重试！")
+                message.showError("服务器超时，请重试！")
             })
     });
 
