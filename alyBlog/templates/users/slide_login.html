@@ -1,0 +1,184 @@
+{% extends "base/base.html" %}
+{% load staticfiles %}
+{% block title %}
+    登录
+{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/authPro/auth.css' %}">
+{% endblock %}
+
+{% block main %}
+    <style>
+        #captcha {
+            height: 50px;
+            width: 440px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+
+        #text {
+            height: 50px;
+            width: 440px;
+            text-align: center;
+            border-radius: 5px;
+            background-color: #3F7F5F;
+            color: #BBBBBB;
+            font-size: 14px;
+            letter-spacing: 0.1px;
+            line-height: 50px;
+
+        }
+
+        #wait {
+            display: none;
+            height: 50px;
+            width: 440px;
+            text-align: center;
+            border-radius: 5px;
+            background-color: #3F7F5F;
+        }
+
+        .loading {
+            margin: auto;
+            width: 70px;
+            height: 20px;
+        }
+
+        .loading-dot {
+            float: left;
+            width: 8px;
+            height: 8px;
+            margin: 18px 4px;
+            background: #ccc;
+
+            -webkit-border-radius: 50%;
+            -moz-border-radius: 50%;
+            border-radius: 50%;
+
+            opacity: 0;
+
+            -webkit-box-shadow: 0 0 2px black;
+            -moz-box-shadow: 0 0 2px black;
+            -ms-box-shadow: 0 0 2px black;
+            -o-box-shadow: 0 0 2px black;
+            box-shadow: 0 0 2px black;
+
+            -webkit-animation: loadingFade 1s infinite;
+            -moz-animation: loadingFade 1s infinite;
+            animation: loadingFade 1s infinite;
+        }
+
+        .loading-dot:nth-child(1) {
+            -webkit-animation-delay: 0s;
+            -moz-animation-delay: 0s;
+            animation-delay: 0s;
+        }
+
+        .loading-dot:nth-child(2) {
+            -webkit-animation-delay: 0.1s;
+            -moz-animation-delay: 0.1s;
+            animation-delay: 0.1s;
+        }
+
+        .loading-dot:nth-child(3) {
+            -webkit-animation-delay: 0.2s;
+            -moz-animation-delay: 0.2s;
+            animation-delay: 0.2s;
+        }
+
+        .loading-dot:nth-child(4) {
+            -webkit-animation-delay: 0.3s;
+            -moz-animation-delay: 0.3s;
+            animation-delay: 0.3s;
+        }
+
+        @-webkit-keyframes loadingFade {
+            0% {
+                opacity: 0;
+            }
+            50% {
+                opacity: 0.8;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+
+        @-moz-keyframes loadingFade {
+            0% {
+                opacity: 0;
+            }
+            50% {
+                opacity: 0.8;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+
+        @keyframes loadingFade {
+            0% {
+                opacity: 0;
+            }
+            50% {
+                opacity: 0.8;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+
+    </style>
+    <main id="container">
+        <div class="login-contain">
+            <div class="top-contain">
+                <h4 class="please-login">请登录</h4>
+                <a href="{% url 'users:register' %}" class="register">立即注册 &gt;</a>
+            </div>
+            <form action="" method="post" class="form-contain">
+                {% csrf_token %}
+                <div class="form-item">
+                    <input type="text" placeholder="请输入密码" name="username" class="form-control">
+                </div>
+                <div class="form-item">
+                    <input type="password" placeholder="请输入密码" name="password" class="form-control">
+                </div>
+                <div class="form-item">
+                    <div id="captcha">
+                        <div id="text">
+                            行为验证™ 安全组件加载中
+                        </div>
+                        <div id="wait" class="show">
+                            <div class="loading">
+                                <div class="loading-dot"></div>
+                                <div class="loading-dot"></div>
+                                <div class="loading-dot"></div>
+                                <div class="loading-dot"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-item clearfix">
+                    <label>
+                        <input type="checkbox" name="remember">
+                        <span>记住我</span>
+                    </label>
+                    <a href="{% url 'users:resetPwd' %}" class="forget-password">忘记密码?</a>
+                </div>
+                <div class="form-login">
+                    <div id="btn" class="login-btn">登录</div>
+                </div>
+            </form>
+        </div>
+    </main>
+    <!-- container end -->
+{% endblock %}
+
+
+{% block script %}
+    <script type="text/javascript" src="{% static 'js/encrypt/crypto-js.js' %}"></script>
+    <script src="{% static 'js/encrypt/encrypt_func.js' %}"></script>
+    <script src="{% static 'js/slide_verify/gt.js' %}"></script>
+    <script src="{% static 'js/slide_verify/slide_verify.js' %}"></script>
+{% endblock %}

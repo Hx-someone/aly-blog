@@ -7,12 +7,13 @@ from django.contrib.auth import login, logout
 from django.shortcuts import redirect, reverse
 
 from users import models
-from users.forms import RegisterForm, LoginForm, ResetPasswordForm
+from alyBlog import settings
+from django.http import HttpResponse
+from utils.plugins.error_str import error_message
 from utils.res_code.res_code import Code, error_map
 from utils.res_code.json_function import to_json_data
-from django.http import HttpResponse
+from users.forms import RegisterForm, LoginForm, ResetPasswordForm
 from itsdangerous import SignatureExpired, TimedJSONWebSignatureSerializer as Serializer
-from django.conf import settings
 
 # 滑动验证码
 from geetest import GeetestLib
@@ -20,9 +21,6 @@ from utils.user_config import user_config
 from utils.userinfo_encrypt.decrypt import DeAesCrypt
 
 logger = logging.getLogger("django")
-
-from alyBlog import settings
-from celery_tasks.celery_email.tasks import send_verify_email
 
 
 class RegisterView(View):
@@ -77,17 +75,14 @@ class RegisterView(View):
             return to_json_data(errmsg="恭喜您注册成功")
 
         else:
-            err_msg_list = []
-
-            for item in form.errors.values():
-                err_msg_list.append(item[0])
-            err_str = "/".join(err_msg_list)
+            err_str = error_message(form)
 
             return to_json_data(errno=Code.PARAMERR, errmsg=err_str)
 
 
 class LoginView(View):
     """
+    不带加密的登录，带有验证码
     # 1. 创建一个LoginView类
     deal login  logic
     param: login_name、password、is_remember_me
@@ -114,7 +109,8 @@ class LoginView(View):
             return to_json_data(errno=Code.UNKOWNERR, errmsg=error_map[Code.UNKOWNERR])  # 未知错误
 
         # 6. 将数据和request传递给LoginForm表单进行验证
-        form = LoginForm(data=dict_data, request=request)
+        # form = LoginForm(data=dict_data, request=request)  # 没有使用加密的
+        form = SlideLoginForm(data=dict_data, request=request)  # 没有使用加密的
 
         # 7. 数据校验成功返回数据给前端
         if form.is_valid():
@@ -122,12 +118,46 @@ class LoginView(View):
             return to_json_data(errmsg="恭喜您登录成功")
 
         else:
-            err_msg_list = []
+            err_str = error_message(form)
+            return to_json_data(errno=Code.PARAMERR, errmsg=err_str)
 
-            for item in form.errors.values():
-                err_msg_list.append(item[0])
-            err_str = "/".join(err_msg_list)
 
+class EnLoginView(View):
+    """账号密码加密传输"""
+
+    def get(self, request):
+
+        return render(request, "users/login.html")
+
+    def post(self, request):
+        try:
+            json_data = request.body
+            if not json_data:
+                return to_json_data(errno=Code.PARAMERR, errmsg=error_map[Code.PARAMERR])  # 参数错误
+
+            # 5. 将数据转化为字典
+            dict_data = json.loads(json_data)
+
+        except Exception as e:
+            return to_json_data(errno=Code.UNKOWNERR, errmsg=error_map[Code.UNKOWNERR])  # 未知错误
+
+        en_username = dict_data.get("login_name")  # 加密的登录账号
+        en_password = dict_data.get("password")  # 加密的登录账号
+        secret_key = dict_data.get("key")  # 加密的登录账号
+        decrypt = DeAesCrypt(secret_key, "Pkcs7")
+        de_username = decrypt.decrypt_aes(en_username)
+        de_password = decrypt.decrypt_aes(en_password)
+        dict_data["login_name"] = de_username
+        dict_data["password"] = de_password
+
+        form = LoginForm(data=dict_data, request=request)  # 没有使用加密的
+        # 7. 数据校验成功返回数据给前端
+        if form.is_valid():
+
+            return to_json_data(errmsg="恭喜您登录成功")
+
+        else:
+            err_str = error_message(form)
             return to_json_data(errno=Code.PARAMERR, errmsg=err_str)
 
 
@@ -163,10 +193,7 @@ class ResetPasswordView(View):
             return to_json_data(errmsg="修改密码成功")
 
         else:
-            err_msg_list = []
-            for item in form.errors.values():
-                err_msg_list.append(item[0])
-            err_str = '/'.join(err_msg_list)
+            err_str = error_message(form)
             return to_json_data(errno=Code.PARAMERR, errmsg=err_str)
 
 
@@ -192,17 +219,14 @@ class EmailVerifyView(View):
         return render(request, 'users/login.html')
 
 
-def test(request):
-    return render(request, 'users/encrypt.html')
-
-
-
-
 def show_slide_index(request):
-    """登录页面显示"""
+    """滑动验证码登录页面显示"""
     return render(request, "users/slide_login.html")
 
+
 class SlideInitView(View):
+    """滑动验证码初始化"""
+
     def get(self, reqeust, t):
         """初始化，获取到流水表示并设置状态码"""
         user_id = 'test'
@@ -216,17 +240,16 @@ class SlideInitView(View):
         return HttpResponse(response_str)
 
 
-
-
-
 class SlideLoginView(View):
+    """滑动验证登录"""
+
     def post(self, request):
         gt = GeetestLib(user_config.GEETEST_ID, user_config.GEETEST_KEY)
 
         # 获取前端传来的登录信息
         en_username = request.POST.get("username")  # 加密的登录账号
         en_password = request.POST.get("password")  # 加密的登录账号
-        secret_key = request.POST.get("k")  # 加密的登录账号
+        secret_key = request.POST.get("key")  # 加密的登录账号
         remember = request.POST.get("remember")  # 加密的登录账号
 
         # 前端传来的geetest的参数
@@ -262,10 +285,7 @@ class SlideLoginView(View):
 
 
             else:
-                err_msg_list = []
-                for item in form.errors.values():
-                    err_msg_list.append(item[0])
-                err_str = "/".join(err_msg_list)
+                err_str = error_message(form)
 
                 return to_json_data(errno=Code.PARAMERR, errmsg=err_str)
         else:

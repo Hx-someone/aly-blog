@@ -2,7 +2,7 @@ $(function () {
     let $loginName = $("#user"); //获取用户登录名输入框
     let $login = $(".form-contain");  //获取整个登录表单
     let $img = $('.form-item .captcha-graph-img img'); //获取图片信息
-    let $smsCodeText = $(".form-item .form-captcha");    //图形验证码输入框文本
+    let $imageCodeText = $(".form-item .form-captcha");    //图形验证码输入框文本
     let sImageCodeId = "";
 
     //生成验证码图片
@@ -27,10 +27,10 @@ $(function () {
 
         //前端校验
         //1.判断用户名是否为空
-        if (sUsername === "") {
+        if(sUsername===""){
             message.showError("用户名输入为空，请重新输入");
             return
-        } else if (!(/\w{5,18}/).test(sUsername)) {
+        }else if(!(/\w{5,18}/).test(sUsername)){
             message.showError("用户名输入格式不正确，请重新输入");
             return
         }
@@ -38,23 +38,21 @@ $(function () {
 
     $login.submit(function (arg) {
         arg.preventDefault();  //阻止form表单默认提交
-
         //获取参数
         let $userAccount = $("input[name=login_name]").val();//获取用户登录名输入值
         let $pwd = $("input[name=password]").val();  //获取用户密码输入框
         let $remember = $("input[type=checkbox]").is(":checked"); //获取用户记住密码选择框
-        let $smsCodeText = $(".form-item .form-captcha");    //图形验证码输入框文本
 
         //1.判断用户名是否为空
-        if ($userAccount === "") {
+        if($userAccount===""){
             message.showError("用户名输入为空，请重新输入");
             return
-        } else if (!(/\w{5,18}/).test($userAccount)) {
+        }else if(!(/\w{5,18}/).test($userAccount)){
             message.showError("用户名输入格式不正确，请重新输入");
             return
         }
         // 判断用户是否输入图形验证码
-        let text = $smsCodeText.val();
+        let text = $imageCodeText.val();
         if (!text) {
             message.showError("请输入图形验证码");
             return
@@ -62,30 +60,33 @@ $(function () {
 
         // 判断UUID
         if (!sImageCodeId) {
-            console.log("第2个" + sImageCodeId);
             message.showError("图形UUID为空");
             return
         }
 
+        let sKey = randomNum(16);
+        let sEnUsername = aesPkcs7Encrypt($userAccount,sKey);
+        let sEnPassword = aesPkcs7Encrypt($pwd,sKey);
+
         //构造ajax请求参数
         let sDataParams = {
-
-            'login_name': $userAccount,  //获取前端输入的登录名
-            'password': $pwd,   //获取前端输入的密码
+            'login_name': sEnUsername.toString(),  //获取前端输入的登录名
+            'password': sEnPassword.toString(),   //获取前端输入的密码
+            "key":sKey,
             'image_text': text,
             "image_code_id": sImageCodeId,
             'remember_me': $remember  //获取前端是否有选择记住密码
         };
         //发送请求
         $.ajax({
-            url: "/users/login/",  //登录请求地址
-            type: "POST",
-            data: JSON.stringify(sDataParams),
-            contentType: "application/json;charset=utf-8",
-            success: function (res) {
-                if (res.errno === "200") {
+            url:"/users/login/",  //登录请求地址
+            type:"POST",
+            data:JSON.stringify(sDataParams),
+            contentType:"application/json;charset=utf-8",
+            success:function (res) {
+                if(res.errno==="200"){
                     message.showSuccess("恭喜登陆成功");
-                    setTimeout(function () {
+                    setTimeout(function(){
                         // window.location.href = document.referrer;  // 登录成功后跳转到登录界面  document.referrer  回到上一个页面
                         window.location.href = '/news/index/';  // 登录成功后跳转到index页面
                         // let sCurrentUrl = $(location).attr("href");  //获取到当前的url
@@ -97,15 +98,15 @@ $(function () {
                         //     window.location.href = '/news/index/'
                         // }
 
-                    }, 800);
-                } else {
-                    message.showError("登录失败" + res.errmsg)
+                    },800);
+                }else{
+                    message.showError("登录失败"+res.errmsg)
                 }
             },
-            error: function () {
+            error:function () {
                 message.showError("注册ajax,服务器超时，请重试")
             }
-        })
+    })
     });
 
 });

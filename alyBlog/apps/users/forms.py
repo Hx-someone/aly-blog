@@ -5,12 +5,12 @@
 @File    : forms.py
 """
 import re
-from django import forms
 from users import models
-from django.db.models import Q
+from django import forms
 from users import contains
-from django_redis import get_redis_connection
+from django.db.models import Q
 from django.contrib.auth import login
+from utils.plugins.captcha import ImageCaptcha, MobileCaptcha
 
 
 class RegisterForm(forms.Form):
@@ -92,16 +92,8 @@ class RegisterForm(forms.Form):
             raise forms.ValidationError("密码输入不一致，请重新输入")
 
         # 6. 判断短信验证码是否和redis中的一致
-        redis_obj = get_redis_connection("verify_code")
-        sms_key = "sms_code_{}".format(cleaned_mobile).encode("utf8")  # 短信验证码
-        sms_repeat_key = "sms_sixty_{}".format(cleaned_mobile).encode("utf8")  # 短信过期
-        redis_sms_text = redis_obj.get(sms_key)
-        redis_sms_repeat_text = redis_obj.get(sms_repeat_key)
-
-        # 用完后就删除该键
-        redis_obj.delete(sms_key)
-        redis_obj.delete(sms_repeat_key)
-
+        mobile_captcha = MobileCaptcha(cleaned_mobile, cleaned_sms_code, alias="verify_code")
+        redis_sms_text, redis_sms_repeat_text = mobile_captcha.captcha_validate
         if not redis_sms_repeat_text:
             raise forms.ValidationError("短信验证码已经过期，请重新获取")
 
@@ -123,6 +115,17 @@ class LoginForm(forms.Form):
             "max_length": "密码格式不正确",
             "min_length": "密码格式不正确",
             "required": "密码不能为空",
+        }
+    )
+
+    image_code_id = forms.UUIDField(error_messages={"required": "UUID不能为空"})
+    image_text = forms.CharField(
+        max_length=4,
+        min_length=4,
+        error_messages={
+            "max_length": "图形验证码格式不正确",
+            "min_length": "图像验证码格式不正确",
+            "required": "图形验证码不能为空"
         }
     )
     remember_me = forms.BooleanField(required=False)
@@ -152,7 +155,16 @@ class LoginForm(forms.Form):
         cleaned_data = super().clean()
         login_name = cleaned_data.get("login_name")
         password = cleaned_data.get("password")
+        image_code_uuid = cleaned_data.get("image_code_id")
+        image_text = cleaned_data.get("image_text")
         remember_me = cleaned_data.get("remember_me")
+
+        # 图形验证码获取
+        image_captcha = ImageCaptcha(image_code_uuid, image_text, alias="verify_code")
+        redis_image_text = image_captcha.captcha_validate
+
+        if image_text.upper() != redis_image_text:
+            raise forms.ValidationError("图形验证码校验失败")
 
         user_queryset = models.Users.objects.filter(Q(username=login_name) | Q(mobile=login_name))
 
@@ -246,85 +258,3 @@ class ResetPasswordForm(forms.Form):
                 raise forms.ValidationError("密码输入不正确，请重新输入密码")
         else:
             raise forms.ValidationError("用户名不存在，请重新输入")
-
-
-
-class SlideLoginForm(forms.Form):
-    """
-        check login field
-        param: login_name、password、is_remember_me
-        """
-    # 1. 校验字段
-    username = forms.CharField()
-    password = forms.CharField(
-        max_length=18,
-        min_length=6,
-        error_messages={
-            "max_length": "密码格式不正确",
-            "min_length": "密码格式不正确",
-            "required": "密码不能为空",
-        }
-    )
-    remember = forms.BooleanField(required=False)
-
-    # 2. 重写__init__获取到request数据
-    def __init__(self, *args, **kwargs):
-        self.request = kwargs.pop("request")
-        super(SlideLoginForm, self).__init__(*args, **kwargs)
-
-    # 3. 单独校验login_name是用户名还是手机号
-
-    def clean_login_name(self):
-        login_name = self.cleaned_data.get("username")
-
-        # 判断登录名是否为空
-        if not login_name:
-            raise forms.ValidationError("登录名不能为空")
-        # 判断用户名格式满不满足用户名或者手机号格式
-        if not (re.match(r'^1[3-9]\d{9}', login_name)) and len(login_name) < 5 or len(login_name) > 18:
-            raise forms.ValidationError("登录名格式不正确")
-
-        return login_name
-
-    # 4. 联合校验获取清洗后的数据
-
-    def clean(self):
-        cleaned_data = super().clean()
-        login_name = cleaned_data.get("username")
-        password = cleaned_data.get("password")
-        remember_me = cleaned_data.get("remember")
-
-        user_queryset = models.Users.objects.filter(Q(username=login_name) | Q(mobile=login_name))
-
-        # 5. 从数据库中获取用户信息进行判断
-        if user_queryset:
-            user = user_queryset.first()
-
-            # 6. 判断密码是否匹配
-            if user.check_password(password):
-
-                # 7. 判断是否勾选remember_me
-                if remember_me:
-
-                    # 8. 设置session过期时间
-                    self.request.session.set_expiry(contains.SESSION_EXPIRE_TIME)  # None是14天
-                else:
-                    self.request.session.set_expiry(0)
-
-                # 9. 给登录设置session
-                login(self.request, user)
-            else:
-                raise forms.ValidationError("密码不正确，请重新输入")
-        else:
-            raise forms.ValidationError("用户名不存在，请重新输入")
-
-
-
-
-
-
-
-
-
-
-

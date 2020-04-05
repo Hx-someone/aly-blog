@@ -16,7 +16,4 @@ urlpatterns = [
     re_path("mobile/(?P<mobile>1[3-9]\d{9})/", views.CheckMobileView.as_view(), name="mobile"),
     path("sms_code/", views.SmsCodeView.as_view(), name="sms_code"),
 
-    path('index/', views.SlideIndexView.as_view(), name="index"),
-    path('index/register-slide/<t>/', views.SlideInitView.as_view(), name="init"),
-    path('verify/', views.SlideVerifyView.as_view(), name="verify"),
 ]

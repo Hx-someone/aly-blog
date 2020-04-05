@@ -128,84 +128,14 @@
                     <!-- content end -->
                 </div>
             {% endblock %}
-            <!-- main-contain  end -->
 
-            <!-- side start -->
             {% block aside %}
     <style>
     .article_rank{
             text-overflow:ellipsis;  {# 默认溢出后以...填充 #}
     }
     </style>
-{#    <aside class="side">#}
-{#        {% block online_class %}#}
-{#            <div class="side-activities">#}
-{#                <h3 class="activities-title">在线课堂<a href="javascript:void(0)">更多</a></h3>#}
-{#                <div class="activities-img">#}
-{#                    <a href="javascript:void(0);" target="_blank">#}
-{#                        <img src="../../static/images/english.jpg" alt="title">#}
-{#                    </a>#}
-{#                    <p class="activities-tips">xxx</p>#}
-{#                </div>#}
-{#                <ul >#}
-{#                    {% for article in article_rank %}#}
-{#                        <li>#}
-{#                            <span>{{ forloop.counter }}.</span><a href="/news/{{ article.id }}/"#}
-{#                                                                  title="{{ article.title }}">{{ article.title }}<b><i#}
-{#                                class="iconfont icon-yueduliang"></i>({{ article.clicks }})</b></a></li>#}
-{#                    <li class="article_rank">#}
-{#                        {{ forloop.counter }}.<a href="/news/{{ article.id }}/" >#}
-{#                            {{ article.title }}#}
-{#                        </a>#}
-{#                        <a href="/news/{{ article.id }}/" >#}
-{#                            {{ article.clicks }}#}
-{#                        </a>#}
-{#                    </li>#}
-{#                    {% endfor %}#}
-{##}
-{#                </ul>#}
-{#            </div>#}
-{#        {% endblock %}#}
-{#        {% block follow_me %}#}
-{#            <div class="side-attention clearfix">#}
-{#                <h3 class="attention-title">关注我</h3>#}
-{#                <ul class="side-attention-address">#}
-{#                    <li>#}
-{#                        <a href="javascript:void(0);" target="_blank"><i class="PyWhich py-GitHub"></i>Taka</a>#}
-{#                    </li>#}
-{#                    <li>#}
-{#                        <a href="javascript:void(0);" target="_blank"><i class="PyWhich py-zhihu"#}
-{#                                                                         style="color:rgb(0, 108, 226);"></i>Taka</a>#}
-{#                    </li>#}
-{#                    <li>#}
-{#                        <a href="javascript:void(0);" target="_blank"><i class="PyWhich py-weibo"#}
-{#                                                                         style="color:rgb(245,92,110);"></i>Taka</a>#}
-{#                    </li>#}
-{#                </ul>#}
-{#                <div class="side-attention-qr">#}
-{#                    <p>扫码关注</p>#}
-{#                </div>#}
-{#            </div>#}
-{#        {% endblock %}#}
-{#        {% block hot_recommend %}#}
-{#            <div class="side-hot-recommend">#}
-{#                <h3 class="hot-recommend">标签云</h3>#}
-{#                <ul class="hot-news-list">#}
-{#                    {% for tag in tag_list %}#}
-{#                        <li style="font-size: 15px;margin: 0 5px 15px 0; text-align: center; float: left;#}
-{#                        ">#}
-{#                            <a href="#" style="text-decoration: none;"#}
-{#                               class="label {% cycle 'label-default' 'label-primary' 'label-success' 'label-info' 'label-warning' 'label-danger' %}">#}
-{#                                {{ tag.name }}#}
-{#                            </a>#}
-{##}
-{#                        </li>#}
-{#                    {% endfor %}#}
-{#                </ul>#}
-{#            </div>#}
-{#        {% endblock %}#}
-{##}
-{#    </aside>#}
+
 {% include 'base/advert.html' %}
 {% endblock %}
 

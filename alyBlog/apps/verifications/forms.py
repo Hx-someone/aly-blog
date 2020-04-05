@@ -5,9 +5,8 @@
 @File    : forms.py
 """
 from django import forms
-from django_redis import get_redis_connection
 from django.core.validators import RegexValidator
-
+from utils.plugins.captcha import ImageCaptcha
 
 mobile_reg = RegexValidator(r"^1[3-9]\d{9}","手机号格式不正确")
 
@@ -45,31 +44,18 @@ class SmsCodeForm(forms.Form):
         image_code_uuid = cleaned_data.get("image_code_id")
         image_text = cleaned_data.get("image_text")
 
-        # 2. 建立redis链接
-        try:
-            redis_obj = get_redis_connection("verify_code")
-        except Exception as e:
-            raise forms.ValidationError("redis数据库连接错误")
+        # 图形验证码获取
+        # print("前端传来获取的：{}".format(image_code_uuid))
+        image_captcha = ImageCaptcha(image_code_uuid, image_text, alias="verify_code")
+        redis_image_text = image_captcha.captcha_validate
 
-        # 3. 构建image_code查询的键
-        image_code_key = "image_{}".format(image_code_uuid).encode("utf8")
-
-        # 4. 获取数据库中的image_code的值
-        redis_byte_image_text = redis_obj.get(image_code_key)
-
-        # 5. 删除redis中该uuid的键
-        redis_obj.delete(image_code_key)  #
-
-        # 6. 将拿到的值化为utf8字符：redis中拿到的值都是二进制
-        redis_image_text = redis_byte_image_text.decode("utf8") if redis_byte_image_text else None
-
-        # 7. 判断现在的image_text和redis_image_text是否一致
         if image_text.upper() != redis_image_text:
             raise forms.ValidationError("图形验证码校验失败")
 
         # 8. 判断60秒内是否有重复发送短信
         redis_sms_repeat_key = "mobile_{}".format(mobile).encode("utf8")  # 构建短信60秒内发送查询的键
-        if redis_obj.get(redis_sms_repeat_key):
+
+        if image_captcha.conn.get(redis_sms_repeat_key):
             raise forms.ValidationError("短信发送太频繁，请稍后再试")
 
 

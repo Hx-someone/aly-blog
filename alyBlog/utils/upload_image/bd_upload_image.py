@@ -9,7 +9,7 @@
 from baidubce.services.bos.bos_client import BosClient
 from baidubce.auth.bce_credentials import BceCredentials
 from baidubce.bce_client_configuration import BceClientConfiguration
-from user_config import user_config
+from utils.user_config import user_config
 
 
 class BdUploadImage(object):

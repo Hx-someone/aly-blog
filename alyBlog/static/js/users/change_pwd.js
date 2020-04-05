@@ -1,6 +1,8 @@
 $(function () {
     let $changePwd = $(".form-contain");
+    let $cancelChange = $(".reset-btn");
 
+    //修改密码
     $changePwd.submit(function (res) {
         res.preventDefault();
         let $loginName = $("input[name=login_name]").val();
@@ -55,5 +57,8 @@ $(function () {
     });
 
 
-
+    //取消修改
+    $cancelChange.click(function () {
+        window.location.href = "/users/login/"
+    })
 });

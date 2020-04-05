@@ -11,6 +11,7 @@
 {% block main %}
 <!-- container start -->
 <main id="container">
+
   <div class="login-contain">
     <div class="top-contain">
       <h4 class="please-login">请登录</h4>
@@ -24,6 +25,12 @@
       <div class="form-item">
         <input type="password" placeholder="请输入密码" name="password" class="form-control">
       </div>
+        <div class="form-item">
+                    <input type="text" placeholder="请输入图形验证码" id="input_captcha" name="captcha_graph" class="form-captcha">
+                    <a href="#" class="captcha-graph-img">
+                        <img src="" alt="验证码" title="点击刷新">
+                    </a>
+                </div>
       <div class="form-item clearfix">
         <label>
           <input type="checkbox" name="remember">
@@ -32,10 +39,7 @@
         <a href="{% url 'users:resetPwd' %}" class="forget-password">忘记密码?</a>
       </div>
       <div class="form-login">
-        <input type="submit" value="登录" class="login-btn">
-      </div>
-        <div class="form-login">
-            <a href="{% url 'users:test' %}">测试发送邮件</a>
+          <input type="submit" value="登录" class="login-btn">
       </div>
     </form>
   </div>
@@ -45,7 +49,7 @@
 
 
 {% block script %}
-{#    <script src="{% static 'js/users/login.js' %}"></script>#}
+    <script src="{% static 'js/plugins/image_uuid.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/encrypt/crypto-js.js' %}"></script>
     <script src="{% static 'js/encrypt/encrypt_func.js' %}"></script>
     <script src="{% static 'js/encrypt/enlogin.js' %}"></script>
